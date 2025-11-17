@@ -5,7 +5,7 @@ A production-ready monorepo boilerplate for dynamic website development with ess
 ## Structure
 
 ```
-custom-boilerplate/
+custom-dynamic-website-boilerplate-monorepo/
 ├── apps/
 │   ├── storage/       # Express File Storage Service (Port 5001) - Runs First
 │   ├── api/           # NestJS Backend API (Port 5002)
@@ -64,7 +64,7 @@ custom-boilerplate/
 
 ```bash
 git clone <repository-url>
-cd custom-boilerplate
+cd custom-dynamic-website-boilerplate-monorepo
 ```
 
 2. Install dependencies:
@@ -74,6 +74,19 @@ pnpm install
 ```
 
 3. Set up environment variables for each app:
+
+#### Storage (`apps/storage/.env`)
+
+```env
+NODE_ENV=development
+HOST=0.0.0.0
+PORT=5001
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+ATTACHMENT_FOLDER_PATH=./external/uploads
+LOG_DIR_PATH=./external/logs
+PUBLIC_URL=http://127.0.0.1:5001
+LOCAL_URL=http://localhost:5001
+```
 
 #### API (`apps/api/.env`)
 
@@ -107,19 +120,6 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:5002
 NODE_ENV=development
 PORT=5004
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5002
-```
-
-#### Storage (`apps/storage/.env`)
-
-```env
-NODE_ENV=development
-HOST=0.0.0.0
-PORT=5001
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-ATTACHMENT_FOLDER_PATH=./external/uploads
-LOG_DIR_PATH=./external/logs
-PUBLIC_URL=http://localhost:5001
-LOCAL_URL=http://localhost:5001
 ```
 
 4. Set up the database (for API):
@@ -261,10 +261,10 @@ docker-compose down
 ### Build individual services:
 
 ```bash
-docker build -f apps/api/Dockerfile -t custom-boilerplate-api .
-docker build -f apps/admin/Dockerfile -t custom-boilerplate-admin .
-docker build -f apps/web/Dockerfile -t custom-boilerplate-web .
-docker build -f apps/storage/Dockerfile -t custom-boilerplate-storage .
+docker build -f apps/api/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-api .
+docker build -f apps/admin/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-admin .
+docker build -f apps/web/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-web .
+docker build -f apps/storage/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-storage .
 ```
 
 ## Environment Validation

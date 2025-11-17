@@ -1,11 +1,11 @@
-version: '3.8'
+version: "3.8"
 
 services:
   storage:
     build:
       context: .
       dockerfile: apps/storage/Dockerfile
-    container_name: custom-boilerplate-storage
+    container_name: custom-dynamic-website-boilerplate-monorepo-storage
     ports:
       - "5001:5001"
     env_file:
@@ -22,7 +22,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: custom-boilerplate-api
+    container_name: custom-dynamic-website-boilerplate-monorepo-api
     ports:
       - "5002:5002"
     env_file:
@@ -39,7 +39,7 @@ services:
     build:
       context: .
       dockerfile: apps/admin/Dockerfile
-    container_name: custom-boilerplate-admin
+    container_name: custom-dynamic-website-boilerplate-monorepo-admin
     ports:
       - "5003:5003"
     env_file:
@@ -56,7 +56,7 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
-    container_name: custom-boilerplate-web
+    container_name: custom-dynamic-website-boilerplate-monorepo-web
     ports:
       - "5004:5004"
     env_file:
@@ -75,4 +75,3 @@ networks:
 
 volumes:
   storage-data:
-
