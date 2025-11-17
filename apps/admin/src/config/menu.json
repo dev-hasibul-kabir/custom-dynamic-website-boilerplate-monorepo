@@ -1,0 +1,27 @@
+[
+  {
+    "label": "Dashboard",
+    "icon": "Home",
+    "to": "/"
+  },
+  {
+    "label": "User Management",
+    "icon": "Users",
+    "items": [
+      {
+        "label": "Roles",
+        "to": "/roles"
+      },
+      {
+        "label": "Users",
+        "to": "/users"
+      }
+    ]
+  },
+  {
+    "label": "File Management",
+    "icon": "Folder",
+    "to": "/folders"
+  }
+]
+

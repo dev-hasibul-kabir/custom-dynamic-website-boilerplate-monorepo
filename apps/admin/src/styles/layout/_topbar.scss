@@ -1,0 +1,123 @@
+.layout-topbar {
+    position: fixed;
+    height: 5rem;
+    z-index: 997;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 1rem;
+    background-color: var(--surface-card);
+    transition: left $transitionDuration;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.08);
+
+    .layout-topbar-logo {
+        display: flex;
+        align-items: center;
+        color: var(--surface-900);
+        font-size: 1.5rem;
+        font-weight: 500;
+        flex: 1;
+        min-width: 0;
+        border-radius: 12px;
+
+        img {
+            height: 2.5rem;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        &:focus {
+            @include focused();
+        }
+    }
+
+    .layout-topbar-button {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        border-radius: 6px;
+        width: 3rem;
+        height: 3rem;
+        cursor: pointer;
+        transition: background-color $transitionDuration;
+
+        // &:hover {
+        //     color: var(--text-color);
+        //     background-color: var(--surface-hover);
+        // }
+
+        // &:focus {
+        //     @include focused();
+        // }
+
+        i {
+            font-size: 1.5rem;
+        }
+
+        span {
+            font-size: 1rem;
+            display: none;
+        }
+    }
+
+    .layout-menu-button {
+        flex-shrink: 0;
+        display: none; // Hidden by default, shown on screens < 1366px
+
+        @media (max-width: 1365px) {
+            display: inline-flex;
+        }
+    }
+
+    .layout-topbar-menu-button {
+        display: none;
+
+        i {
+            font-size: 1.25rem;
+        }
+    }
+
+    .layout-topbar-menu {
+        margin: 0 0 0 auto;
+        padding: 0;
+        list-style: none;
+        display: flex;
+
+        .layout-topbar-button {
+            margin-left: 1rem;
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    .layout-topbar {
+        justify-content: space-between;
+        padding: 0 0.75rem;
+        gap: 0.5rem;
+
+        .layout-topbar-logo {
+            flex: 1;
+            min-width: 0;
+            order: 2;
+
+            img {
+                height: 2rem;
+            }
+        }
+
+        .layout-menu-button {
+            order: 1;
+            flex-shrink: 0;
+        }
+
+        .layout-topbar-menu {
+            order: 3;
+            flex-shrink: 0;
+            margin-left: 0;
+        }
+    }
+}

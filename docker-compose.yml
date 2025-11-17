@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  storage:
+    build:
+      context: .
+      dockerfile: apps/storage/Dockerfile
+    container_name: custom-boilerplate-storage
+    ports:
+      - "5001:5001"
+    env_file:
+      - apps/storage/.env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - storage-data:/app/apps/storage/external
+    networks:
+      - boilerplate-network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: custom-boilerplate-api
+    ports:
+      - "5002:5002"
+    env_file:
+      - apps/api/.env
+    environment:
+      - NODE_ENV=production
+    networks:
+      - boilerplate-network
+    restart: unless-stopped
+    depends_on:
+      - storage
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+    container_name: custom-boilerplate-admin
+    ports:
+      - "5003:5003"
+    env_file:
+      - apps/admin/.env
+    environment:
+      - NODE_ENV=production
+    networks:
+      - boilerplate-network
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: custom-boilerplate-web
+    ports:
+      - "5004:5004"
+    env_file:
+      - apps/web/.env
+    environment:
+      - NODE_ENV=production
+    networks:
+      - boilerplate-network
+    restart: unless-stopped
+    depends_on:
+      - api
+
+networks:
+  boilerplate-network:
+    driver: bridge
+
+volumes:
+  storage-data:
+

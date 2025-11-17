@@ -1,0 +1,25 @@
+.layout-footer {
+    transition: margin-left $transitionDuration;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-top: 1px solid var(--surface-border);
+    text-align: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+
+    span {
+        display: inline-block;
+    }
+}
+
+@media (max-width: 640px) {
+    .layout-footer {
+        font-size: 0.75rem;
+        padding: 0.75rem 0.5rem;
+        flex-direction: column;
+        gap: 0.125rem;
+    }
+}

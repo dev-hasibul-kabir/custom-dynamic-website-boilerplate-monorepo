@@ -1,0 +1,41 @@
+{
+  "name": "custom-boilerplate",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "db:migrate:dev": "pnpm --filter @repo/api db:migrate:dev",
+    "db:migrate:prod": "pnpm --filter @repo/api db:migrate:prod",
+    "db:seed": "pnpm --filter @repo/api db:seed",
+    "db:studio": "pnpm --filter @repo/api db:studio",
+    "dev": "turbo run dev",
+    "dev:storage": "pnpm --filter @repo/storage dev",
+    "dev:api": "pnpm --filter @repo/api dev",
+    "dev:admin": "pnpm --filter @repo/admin dev",
+    "dev:web": "pnpm --filter @repo/web dev",
+    "build": "turbo run build",
+    "build:storage": "pnpm --filter @repo/storage build",
+    "build:api": "pnpm --filter @repo/api build",
+    "build:admin": "pnpm --filter @repo/admin build",
+    "build:web": "pnpm --filter @repo/web build",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "clean:storage": "pnpm --filter @repo/storage clean",
+    "clean:api": "pnpm --filter @repo/api clean",
+    "clean:admin": "pnpm --filter @repo/admin clean",
+    "clean:web": "pnpm --filter @repo/web clean"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

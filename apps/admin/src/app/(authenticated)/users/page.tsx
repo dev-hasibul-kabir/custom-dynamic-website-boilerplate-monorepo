@@ -1,0 +1,175 @@
+'use client';
+
+import React, { useMemo, useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import _ from 'lodash';
+import GenericViewGenerator from '@/components/global/GenericViewGenerator';
+import { getRoles } from '@/apis';
+import { IField } from '@/components/global/GenericFormGenerator';
+import { getSeverity, getUserStatusOptions } from '@/utils';
+
+export const getUserManagementFields = (roles: { id: number; name: string }[]): IField[] => [
+    {
+        type: 'text',
+        name: 'name',
+        placeholder: 'Enter a name!',
+        title: 'Name (Full name)',
+        initialValue: null,
+        validate: (values: any) => {
+            if (!values.name) return 'Required!';
+
+            return null;
+        },
+    },
+    {
+        type: 'email',
+        name: 'email',
+        placeholder: 'Enter an email!',
+        title: 'Email',
+        initialValue: null,
+        validate: (values: any) => {
+            if (!values.email) return 'Required!';
+
+            return null;
+        },
+    },
+    {
+        type: 'password',
+        name: 'password',
+        placeholder: 'Enter a password!',
+        title: 'Password',
+        initialValue: null,
+        validate: (values: any) => {
+            if (!values.password) return 'Required!';
+
+            return null;
+        },
+    },
+    {
+        type: 'select-sync',
+        name: 'roleId',
+        placeholder: 'Select a role!',
+        title: 'Role',
+        initialValue: null,
+        options: _.map(roles, (role: { id: number; name: string }) => ({
+            value: role.id,
+            label: role.name,
+        })),
+        validate: (values: any) => {
+            if (!values.roleId) return 'Required!';
+
+            return null;
+        },
+    },
+    {
+        type: 'select-sync',
+        name: 'status',
+        placeholder: 'Select a status!',
+        title: 'Status',
+        initialValue: 'ACTIVE',
+        options: getUserStatusOptions(),
+        validate: (values: any) => {
+            if (!values.status) return 'Status required!';
+
+            return null;
+        },
+    },
+];
+
+const Page = () => {
+    const [roles, setRoles] = useState<{ id: number; name: string }[] | null>(null);
+
+    useEffect(() => {
+        getRoles()
+            .then(response => {
+                if (!response) {
+                    // showToast('error', 'Unsuccessful!', 'Server not working!');
+                } else if (response.statusCode !== 200) {
+                    // showToast('error', 'Unsuccessful!', response.message);
+                } else {
+                    // showToast('success', 'Success!', response.message);
+
+                    setRoles(response.data);
+                }
+            })
+            .catch(error => {
+                console.error('error', error);
+
+                // showToast('error', 'Unsuccessful!', 'Something went wrong!');
+            })
+            .finally(() => {});
+    }, []);
+
+    const getBadgeVariant = (status: string) => {
+        const severity = getSeverity(status);
+        if (severity === 'success') return 'default';
+        if (severity === 'danger') return 'destructive';
+        if (severity === 'warning') return 'secondary';
+        return 'outline';
+    };
+
+    return (
+        <Card>
+            <CardContent className="pt-6">
+                {useMemo(
+                    () =>
+                        !roles ? null : (
+                            <GenericViewGenerator
+                                name={'User'}
+                                title="Users"
+                                subtitle="Manage user here!"
+                                viewAll={{
+                                    uri: `/api/v1/users`,
+                                    ignoredColumns: [
+                                        'id',
+                                        'password',
+                                        'otp',
+                                        'otpAttemptCount',
+                                        'roleId',
+                                        'phone',
+                                        'nid',
+                                        'dateOfBirth',
+                                        'gender',
+                                        'address',
+                                        'createdAt',
+                                        'updatedAt',
+                                    ],
+                                    scopedColumns: {
+                                        status: (item: any) => (
+                                            <Badge variant={getBadgeVariant(item.status)}>{item.status}</Badge>
+                                        ),
+                                    },
+                                    actionIdentifier: 'id',
+                                    onDataModify: data =>
+                                        _.map(data, datum => ({
+                                            ...datum,
+                                            role: datum.role.name,
+                                        })),
+                                }}
+                                addNew={{
+                                    uri: `/api/v1/users`,
+                                }}
+                                viewOne={{ uri: '/api/v1/users/{id}', identifier: '{id}' }}
+                                editExisting={{ uri: '/api/v1/users/{id}', identifier: '{id}' }}
+                                removeOne={{
+                                    uri: '/api/v1/users/{id}',
+                                    identifier: '{id}',
+                                }}
+                                fields={getUserManagementFields(roles).filter(field => field.name !== 'status')}
+                                editFields={getUserManagementFields(roles)
+                                    .filter(field => field.name !== 'password')
+                                    .map(field =>
+                                        field.name !== 'email' ? { ...field } : { ...field, isDisabled: true },
+                                    )}
+                            />
+                        ),
+                    [roles],
+                )}
+            </CardContent>
+        </Card>
+    );
+};
+
+export default Page;
+
