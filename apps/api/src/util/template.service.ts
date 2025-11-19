@@ -16,7 +16,7 @@ export class TemplateService {
     this.templatesPath = path.join(basePath, 'email-templates');
   }
 
-  async renderTemplate(templateName: string, data: Record<string, any>): Promise<string> {
+  renderTemplate(templateName: string, data: Record<string, unknown>): string {
     try {
       const templatePath = path.join(this.templatesPath, templateName, 'index.hbs');
 

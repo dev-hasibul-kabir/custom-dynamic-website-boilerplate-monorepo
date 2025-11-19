@@ -11,8 +11,8 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
-  const host = configService.get('HOST') || '0.0.0.0';
-  const port = configService.get('PORT') || 5002;
+  const host = configService.get<string>('HOST') || '0.0.0.0';
+  const port = (configService.get<string | number>('PORT') as number) || 5002;
 
   // Global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -34,7 +34,8 @@ async function bootstrap() {
   );
 
   // CORS configuration
-  const allowedOrigins = configService.get('CORS_ORIGINS')?.split(',') || ['*'];
+  const corsOrigins = configService.get<string>('CORS_ORIGINS');
+  const allowedOrigins = corsOrigins?.split(',') || ['*'];
   app.enableCors({
     origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -74,9 +75,9 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(port, host);
+  await app.listen(Number(port), host);
   logger.log(`Application is running on: http://${host}:${port}`);
   logger.log(`Swagger documentation available at: http://${host}:${port}/api/docs`);
 }
 
-bootstrap();
+void bootstrap();

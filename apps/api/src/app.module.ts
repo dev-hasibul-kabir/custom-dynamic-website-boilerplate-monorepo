@@ -25,7 +25,7 @@ import { AuthorizationModule } from '@/common/authorization/authorization.module
 
     BullModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
+      useFactory: (config: ConfigService) => ({
         redis: {
           host: config.get('REDIS_HOST'),
           port: config.get('REDIS_PORT'),
@@ -35,17 +35,22 @@ import { AuthorizationModule } from '@/common/authorization/authorization.module
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         uri: configService.get('MONGO_DATABASE_URL'),
         // useNewUrlParser: true,
         // useUnifiedTopology: true,
         user: configService.get('MONGO_DB_USERNAME'),
         pass: configService.get('MONGO_DB_PASSWORD'),
         authSource: configService.get('MONGO_DB_AUTHSOURCE'),
-        connectionFactory: connection => {
-          connection.on('connected', () => {
-            console.debug('MongoDB successfully connected!');
-          });
+        connectionFactory: (connection: unknown) => {
+          if (connection && typeof connection === 'object' && 'on' in connection) {
+            (connection as { on: (event: string, callback: () => void) => void }).on(
+              'connected',
+              () => {
+                console.debug('MongoDB successfully connected!');
+              },
+            );
+          }
 
           return connection;
         },

@@ -65,49 +65,43 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponse<T
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<T>> {
     const ctx = context.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    const response = ctx.getResponse<{ statusCode?: number }>();
+    const request = ctx.getRequest<{ url?: string }>();
     const statusCode = response.statusCode || HttpStatus.OK;
-    const path = request.url;
+    const path = request.url || '';
 
     return next.handle().pipe(
-      map((data: any) => {
+      map((data: unknown) => {
         // If data is a ServiceResult structure (from services)
         // Services should return ServiceResult<T> for BUSINESS LOGIC ERRORS only
         // System errors should bubble up and be handled by Exception Filter
         if (data && typeof data === 'object' && 'success' in data) {
-          const result = data as ServiceResult;
+          const result = data as ServiceResult<unknown>;
 
           if (!result.success) {
             // Handle error - convert to HttpException
-            const { name, message } =
-              this.errorService.handleDbError(result.error, {
-                unique: `Oops! Unique validation error occurred!`,
-                foreignKeyConstraint: `Oops! You can't delete, update or create this record because it's linked to other data.`,
-                recordNotFound: `We're sorry, but the requested record could not be found.`,
-              }) ?? {};
+            const errorInfo = this.errorService.handleDbError(result.error, {
+              unique: `Oops! Unique validation error occurred!`,
+              foreignKeyConstraint: `Oops! You can't delete, update or create this record because it's linked to other data.`,
+              recordNotFound: `We're sorry, but the requested record could not be found.`,
+            });
 
-            const error =
-              !name || !message
-                ? result.error
-                : {
-                    name,
-                    message,
-                  };
+            const errorName = errorInfo?.name;
+            const errorMessage = errorInfo?.message;
 
             // Throw appropriate HttpException based on error name
-            if (error && typeof error === 'object' && 'name' in error) {
-              if (error.name === 'badRequest') {
-                throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+            if (errorName && errorMessage) {
+              if (errorName === 'badRequest') {
+                throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);
               }
-              if (error.name === 'unauthorized') {
-                throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+              if (errorName === 'unauthorized') {
+                throw new HttpException(errorMessage, HttpStatus.UNAUTHORIZED);
               }
-              if (error.name === 'forbidden') {
-                throw new HttpException(error.message, HttpStatus.FORBIDDEN);
+              if (errorName === 'forbidden') {
+                throw new HttpException(errorMessage, HttpStatus.FORBIDDEN);
               }
-              if (error.name === 'notImplemented') {
-                throw new HttpException(error.message, HttpStatus.NOT_IMPLEMENTED);
+              if (errorName === 'notImplemented') {
+                throw new HttpException(errorMessage, HttpStatus.NOT_IMPLEMENTED);
               }
             }
 
@@ -121,7 +115,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponse<T
           return {
             statusCode,
             message: result.message || 'Request successful',
-            data: result.data,
+            data: result.data as T,
             timestamp: new Date().toISOString(),
             path,
           };
@@ -131,24 +125,19 @@ export class TransformInterceptor<T> implements NestInterceptor<T, ApiResponse<T
         return {
           statusCode,
           message: 'Request successful',
-          data,
+          data: data as T,
           timestamp: new Date().toISOString(),
           path,
         };
       }),
-      catchError(error => {
+      catchError((error: unknown) => {
         // Re-throw HttpException as-is (will be handled by HttpExceptionFilter)
         if (error instanceof HttpException) {
           return throwError(() => error);
         }
         // Wrap other errors
-        return throwError(
-          () =>
-            new HttpException(
-              error.message || 'Internal server error',
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            ),
-        );
+        const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+        return throwError(() => new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR));
       }),
     );
   }

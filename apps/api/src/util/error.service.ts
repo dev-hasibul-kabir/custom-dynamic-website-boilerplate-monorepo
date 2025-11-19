@@ -9,7 +9,10 @@ interface DbErrorMessage {
 
 @Injectable()
 export class ErrorService {
-  handleDbError(error: any, dbErrorMessage: DbErrorMessage) {
+  handleDbError(
+    error: unknown,
+    dbErrorMessage: DbErrorMessage,
+  ): { name: string; message: string | undefined } | null {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         return {

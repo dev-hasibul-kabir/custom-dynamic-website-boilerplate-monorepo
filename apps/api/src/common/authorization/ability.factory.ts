@@ -49,7 +49,7 @@ export class AbilityFactory {
       },
     });
 
-    const { can, build } = new AbilityBuilder<AppAbility>(createPrismaAbility as any);
+    const { can, build } = new AbilityBuilder<AppAbility>(createPrismaAbility);
 
     if (!user) {
       return build();

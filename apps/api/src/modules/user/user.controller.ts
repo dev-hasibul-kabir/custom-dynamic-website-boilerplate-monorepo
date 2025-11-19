@@ -60,7 +60,7 @@ export class UserController {
   @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   @Get('api/v1/user-profile')
-  async readProfile(@GetUser() user: any) {
+  readProfile(@GetUser() user: unknown) {
     return {
       success: true,
       data: user,

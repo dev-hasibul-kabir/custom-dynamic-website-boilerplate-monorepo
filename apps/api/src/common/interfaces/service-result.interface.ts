@@ -90,7 +90,7 @@ export interface ServiceError {
  *
  * @template T - The type of data being returned
  */
-export interface ServiceResult<T = any> {
+export interface ServiceResult<T = unknown> {
   /**
    * Indicates whether the operation was successful
    */
@@ -110,7 +110,7 @@ export interface ServiceResult<T = any> {
    * Error information (only present when success is false)
    * Should be a ServiceError for business logic errors
    */
-  error?: ServiceError | any;
+  error?: ServiceError;
 }
 
 /**
@@ -135,7 +135,7 @@ export function createSuccessResult<T>(data: T, message?: string): ServiceResult
  * @param message - Optional error message (overrides error.message if provided)
  * @returns ServiceResult with success: false
  */
-export function createErrorResult(error: ServiceError | any, message?: string): ServiceResult {
+export function createErrorResult(error: ServiceError, message?: string): ServiceResult {
   return {
     success: false,
     error,

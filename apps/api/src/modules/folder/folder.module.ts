@@ -21,31 +21,51 @@ import * as _ from 'lodash';
       imports: [ConfigModule, DbModule],
       useFactory: (configService: ConfigService, dbService: DbService) => ({
         storage: diskStorage({
-          destination: async (req, file, callback) => {
-            try {
-              // console.debug({ file });
+          destination: (req, file, callback) => {
+            void (async () => {
+              try {
+                // console.debug({ file });
 
-              // console.debug({ body: req.body });
-              // console.debug({ folderId: req.body.folderId });
-              // console.debug({ folderId: parseInt(req.body.folderId) });
+                // console.debug({ body: req.body });
+                // console.debug({ folderId: req.body.folderId });
+                // console.debug({ folderId: parseInt(req.body.folderId) });
 
-              const folder = await dbService.folder.findFirst({
-                where: { id: parseInt(req.body.folderId) },
-              });
-              // console.debug({ folder });
+                const folderId =
+                  req.body && typeof req.body === 'object' && 'folderId' in req.body
+                    ? String(req.body.folderId)
+                    : null;
 
-              const dirPath = join(configService.get('ATTACHMENT_DIRECTORY'), folder.slug);
-              // console.debug({ dirPath });
+                if (!folderId) {
+                  return callback(new Error('folderId is required'), '');
+                }
 
-              fs.mkdirSync(dirPath, {
-                recursive: true,
-              });
+                const folder = await dbService.folder.findFirst({
+                  where: { id: parseInt(folderId, 10) },
+                });
+                // console.debug({ folder });
 
-              return callback(null, dirPath);
-            } catch (error) {
-              const err = error instanceof Error ? error : new Error(String(error));
-              return callback(err, null);
-            }
+                if (!folder || !folder.slug) {
+                  return callback(new Error('Folder not found'), '');
+                }
+
+                const attachmentDir = configService.get<string>('ATTACHMENT_DIRECTORY');
+                if (!attachmentDir) {
+                  return callback(new Error('ATTACHMENT_DIRECTORY not configured'), '');
+                }
+
+                const dirPath = join(attachmentDir, folder.slug);
+                // console.debug({ dirPath });
+
+                fs.mkdirSync(dirPath, {
+                  recursive: true,
+                });
+
+                return callback(null, dirPath);
+              } catch (error) {
+                const err = error instanceof Error ? error : new Error('Unknown error');
+                return callback(err, '');
+              }
+            })();
           },
           filename: (req, file, callback) => {
             // console.debug({ req, file });
@@ -57,10 +77,12 @@ import * as _ from 'lodash';
 
             const originalFileNameWithoutExtension = _.replace(file.originalname, extension, '');
 
-            const newFileNameWithoutExtension =
-              slugify(!req.body.name ? originalFileNameWithoutExtension : req.body.name, {}) +
-              '_' +
-              new Date().getTime();
+            const fileName =
+              req.body && typeof req.body === 'object' && 'name' in req.body
+                ? String(req.body.name)
+                : originalFileNameWithoutExtension;
+
+            const newFileNameWithoutExtension = slugify(fileName, {}) + '_' + new Date().getTime();
 
             return callback(null, `${newFileNameWithoutExtension}${extension}`);
           },

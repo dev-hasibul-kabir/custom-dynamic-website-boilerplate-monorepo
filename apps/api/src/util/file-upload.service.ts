@@ -6,8 +6,8 @@ import axios from 'axios';
 interface IResponseData {
   statusCode: number;
   message: string;
-  data?: any;
-  error?: any;
+  data?: unknown;
+  error?: unknown;
 }
 
 @Injectable()
@@ -36,17 +36,15 @@ export class FileUploadService {
       formData.append('isConvertToWebp', 'true');
     }
 
-    try {
-      const response = await axios.post(this.config.get('S2_FILE_CREATE_URL'), formData, {
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: authorization },
-      });
+    const response = await axios.post(this.config.get('S2_FILE_CREATE_URL'), formData, {
+      headers: { 'Content-Type': 'multipart/form-data', Authorization: authorization },
+    });
 
-      if (response.status === 200) {
-        return response.data; // You can return the response from the API if needed
-      }
-    } catch (error) {
-      throw error;
+    if (response.status === 200) {
+      return response.data as IResponseData; // You can return the response from the API if needed
     }
+
+    throw new Error('File upload failed');
   }
 
   async editFileIntoS2(
@@ -67,30 +65,26 @@ export class FileUploadService {
       allowedExtensions.forEach(extension => formData.append('allowedExtensions[]', extension));
     }
 
-    try {
-      const response = await axios.put(url, formData, {
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: authorization },
-      });
+    const response = await axios.put(url, formData, {
+      headers: { 'Content-Type': 'multipart/form-data', Authorization: authorization },
+    });
 
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
-      throw error;
+    if (response.status === 200) {
+      return response.data as IResponseData;
     }
+
+    throw new Error('File update failed');
   }
 
   async removeFileFromS2(url: string, authorization: string): Promise<IResponseData> {
-    try {
-      const response = await axios.delete(url, {
-        headers: { Authorization: authorization },
-      });
+    const response = await axios.delete(url, {
+      headers: { Authorization: authorization },
+    });
 
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
-      throw error;
+    if (response.status === 200) {
+      return response.data as IResponseData;
     }
+
+    throw new Error('File deletion failed');
   }
 }

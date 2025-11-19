@@ -51,15 +51,15 @@ export class FolderController {
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Put('api/v1/folders/:id')
-  async updateById(@Param('id') id, @Body() dto: UpdateFolderDto) {
-    return await this.folderService.editById(parseInt(id), dto);
+  async updateById(@Param('id') id: string, @Body() dto: UpdateFolderDto) {
+    return await this.folderService.editById(parseInt(id, 10), dto);
   }
 
   @CheckAbility({ subject: folderSubject, action: 'delete' })
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Delete('api/v1/folders/:id')
-  async deleteById(@Param('id') id) {
-    return await this.folderService.removeById(parseInt(id));
+  async deleteById(@Param('id') id: string) {
+    return await this.folderService.removeById(parseInt(id, 10));
   }
 }

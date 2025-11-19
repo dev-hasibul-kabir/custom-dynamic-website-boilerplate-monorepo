@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
-export interface IMailerPayload extends nodemailer.SendMailOptions {}
+export type IMailerPayload = nodemailer.SendMailOptions;
 
 export interface IMailerResponse {
   success: boolean;

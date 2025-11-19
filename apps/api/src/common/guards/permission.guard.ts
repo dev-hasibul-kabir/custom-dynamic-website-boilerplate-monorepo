@@ -26,10 +26,12 @@ export class PermissionGuard extends JwtGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    const { user } = request;
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user?: { id?: number }; ability?: unknown }>();
+    const user = request.user;
 
-    if (!user || !user.id) {
+    if (!user || typeof user.id !== 'number') {
       return false;
     }
 

@@ -38,7 +38,7 @@ export class FileController {
 
   @HttpCode(HttpStatus.OK)
   @Get('folders/:folderName/files/:fileName')
-  async getFile(@Param('folderName') folderName: string, @Param('fileName') fileName: string) {
+  getFile(@Param('folderName') folderName: string, @Param('fileName') fileName: string) {
     return this.fileService.getFile(folderName, fileName);
   }
 
@@ -71,7 +71,7 @@ export class FileController {
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Delete('api/v1/files/:id')
-  async deleteById(@Param('id') id) {
-    return await this.fileService.removeById(parseInt(id));
+  async deleteById(@Param('id') id: string) {
+    return await this.fileService.removeById(parseInt(id, 10));
   }
 }

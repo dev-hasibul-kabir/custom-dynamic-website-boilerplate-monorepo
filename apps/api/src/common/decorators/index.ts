@@ -4,8 +4,8 @@ import { AppActions, AppSubjects } from '@/common/authorization/ability.types';
 export const GetUser = createParamDecorator((data: string | null, ctx: ExecutionContext) => {
   const request: Express.Request = ctx.switchToHttp().getRequest();
 
-  if (data) {
-    return request.user[data];
+  if (data && request.user && typeof request.user === 'object') {
+    return (request.user as Record<string, unknown>)[data];
   }
 
   return request.user;

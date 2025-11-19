@@ -288,13 +288,13 @@ export class UserService {
 
     // Send email notification (non-blocking, let errors bubble if critical)
     try {
-      const emailHtml = await this.templateService.renderTemplate('user-creation-credentials', {
+      const emailHtml = this.templateService.renderTemplate('user-creation-credentials', {
         userName: dto.name,
         userEmail: dto.email,
         userPassword: dto.password,
       });
 
-      this.notificationService.sendEmail({
+      void this.notificationService.sendEmail({
         to: user.email,
         subject: 'User Creation Success',
         html: emailHtml,
@@ -373,7 +373,7 @@ export class UserService {
     const data = await this.getUserProfile(id);
 
     // Send email notification (non-blocking)
-    this.notificationService.sendEmail({
+    void this.notificationService.sendEmail({
       to: user.email,
       subject: `User Information Update`,
       html: `
@@ -486,7 +486,7 @@ export class UserService {
       where: { id },
     });
 
-    this.notificationService.sendEmail({
+    void this.notificationService.sendEmail({
       to: data.email,
       subject: `User Account Deletion`,
       html: `
