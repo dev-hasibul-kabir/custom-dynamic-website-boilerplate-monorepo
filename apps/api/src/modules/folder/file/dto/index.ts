@@ -11,8 +11,12 @@ export class FileDto {
   type: FileType;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  url: string;
 
   @IsEnum(GeneralStatus)
   @IsNotEmpty()

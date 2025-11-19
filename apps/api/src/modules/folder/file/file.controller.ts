@@ -9,10 +9,7 @@ import {
   Param,
   Delete,
   Inject,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { FileService } from './file.service';
 import { CheckAbility } from '@/common/decorators';
 import { PermissionGuard } from '@/common/guards';
@@ -29,11 +26,8 @@ export class FileController {
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Post('api/v1/files')
-  @UseInterceptors(FileInterceptor('file'))
-  async create(@Body() dto: FileDto, @UploadedFile() file: Express.Multer.File) {
-    // console.debug({ file });
-
-    return await this.fileService.save(dto, file);
+  async create(@Body() dto: FileDto) {
+    return await this.fileService.save(dto);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -62,7 +56,6 @@ export class FileController {
   // @UseGuards(PermissionGuard)
   // @HttpCode(HttpStatus.OK)
   // @Put('api/v1/files/:id')
-  // @UseInterceptors(FileInterceptor('url'))
   // async updateById(@Param('id') id, @Body() dto: UpdateFileDto) {
   // 	return await this.fileService.editById(parseInt(id), dto);
   // }

@@ -14,19 +14,26 @@ export class FileService {
   @Inject(DbService)
   private readonly db: DbService;
 
-  async save(dto: FileDto, file: Express.Multer.File): Promise<ServiceResult> {
+  async save(dto: FileDto): Promise<ServiceResult> {
     // Business logic validation
-    if (!file || !file.filename) {
-      return createErrorResult(
-        { name: 'badRequest', message: 'File is required' },
-        'File is required',
-      );
-    }
-
     if (!dto.folderId) {
       return createErrorResult(
         { name: 'badRequest', message: 'Folder ID is required' },
         'Folder ID is required',
+      );
+    }
+
+    if (!dto.name) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'File name is required' },
+        'File name is required',
+      );
+    }
+
+    if (!dto.url) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'File URL is required' },
+        'File URL is required',
       );
     }
 
@@ -48,12 +55,12 @@ export class FileService {
       data: {
         ...dto,
         folderId: parseInt(dto.folderId),
-        name: file.filename,
-        url: `${this.config.get('ATTACHMENT_PUBLIC_URL')}/folders/${folder.slug}/files/${file.filename}`,
+        name: dto.name,
+        url: dto.url,
       },
     });
 
-    return createSuccessResult(data, 'File uploaded successfully');
+    return createSuccessResult(data, 'File created successfully');
   }
 
   getFile(folderName: string, fileName: string) {

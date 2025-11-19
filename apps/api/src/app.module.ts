@@ -6,7 +6,7 @@ import { UtilityModule } from './util/utility.module';
 import { LoggerMiddleware } from '@/common/middlewares/logger.middleware';
 import { BullModule } from '@nestjs/bull';
 import { MongooseModule } from '@nestjs/mongoose';
-import { validate } from './config/env.validation';
+import { validate } from './config/env';
 
 // Application modules
 import { AuthModule } from '@/modules/auth/auth.module';

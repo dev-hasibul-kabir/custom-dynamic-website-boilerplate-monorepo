@@ -1,12 +1,12 @@
 import { createErrorResult, createSuccessResult, ServiceResult } from '@/common/interfaces';
+import { DbService } from '@/db/db.service';
 import { HashService } from '@/util/hash.service';
 import { NotificationService } from '@/util/notification.service';
 import { TemplateService } from '@/util/template.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Prisma, Gender, UserStatus } from '@prisma/client';
-import { DbService } from '@/db/db.service';
+import { Gender, Prisma, UserStatus } from '@prisma/client';
 import { SignInUserDto, UserCreateDto, UserUpdateDto } from './dto';
 
 type UserWithRelations = Prisma.UserGetPayload<{
@@ -372,50 +372,23 @@ export class UserService {
 
     const data = await this.getUserProfile(id);
 
-    // Send email notification (non-blocking)
-    void this.notificationService.sendEmail({
-      to: user.email,
-      subject: `User Information Update`,
-      html: `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>User Information Update</title>
-			</head>
-			<body>
-				<div style="background-color: #f4f4f4; padding: 20px;">
-					<div style="max-width: 600px; margin: 0 auto; background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+    // Send email notification (non-blocking, let errors bubble if critical)
+    try {
+      const emailHtml = this.templateService.renderTemplate('user-update', {
+        userName: dto.name ?? user.name,
+        userPhone: dto.phone ?? user.phone,
+        userNid: dto.nid ?? user.nid,
+      });
 
-						<div style="text-align: center; padding: 20px;">
-							<h1>User Information Update</h1>
-						</div>
-
-						<div style="padding: 20px;">
-							<p>Hello ${dto.name},</p>
-							<p>Your admin panel account information has been updated. Here are the details:</p>
-
-							<h2>Updated Information:</h2>
-							<ul>
-								<li>Full Name: ${dto.name}</li>
-								<li>Phone: ${dto.phone}</li>
-								<li>NID: ${dto.nid}</li>
-							</ul>
-
-							<p>If you did not initiate this update or have any questions regarding your account, please contact our support team immediately.</p>
-
-							<p>Thank you for using our admin panel.</p>
-
-							<p>Best regards,</p>
-							<p>Example</p>
-						</div>
-					</div>
-				</div>
-			</body>
-			</html>
-			`,
-    });
+      void this.notificationService.sendEmail({
+        to: user.email,
+        subject: 'User Information Update',
+        html: emailHtml,
+      });
+    } catch (error) {
+      console.error('UserService -> editById -> email sending error:', error);
+      // Continue execution even if email fails
+    }
 
     return createSuccessResult(data, 'User updated successfully');
   }
@@ -482,47 +455,34 @@ export class UserService {
       );
     }
 
+    const user = await this.db.user.findUnique({
+      where: { id },
+      select: { name: true, email: true },
+    });
+
+    if (!user) {
+      return createErrorResult({ name: 'badRequest', message: 'User not found' }, 'User not found');
+    }
+
     const data = await this.db.user.delete({
       where: { id },
     });
 
-    void this.notificationService.sendEmail({
-      to: data.email,
-      subject: `User Account Deletion`,
-      html: `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>User Account Deletion</title>
-			</head>
-			<body>
-				<div style="background-color: #f4f4f4; padding: 20px;">
-					<div style="max-width: 600px; margin: 0 auto; background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+    // Send email notification (non-blocking, let errors bubble if critical)
+    try {
+      const emailHtml = this.templateService.renderTemplate('user-deletion', {
+        userName: user.name,
+      });
 
-						<div style="text-align: center; padding: 20px;">
-							<h1>User Account Deletion</h1>
-						</div>
-
-						<div style="padding: 20px;">
-							<p>Hello Admin,</p>
-							<p>We regret to inform you that your admin panel account has been deleted. This action was taken as per your request or due to specific circumstances.</p>
-
-							<p>If you believe this deletion was in error or have any questions or concerns, please contact company support team immediately.</p>
-
-							<p>We appreciate your usage of our admin panel.</p>
-
-							<p>Best regards,</p>
-							<p>Example</p>
-						</div>
-
-					</div>
-				</div>
-			</body>
-			</html>
-			`,
-    });
+      void this.notificationService.sendEmail({
+        to: user.email,
+        subject: 'User Account Deletion',
+        html: emailHtml,
+      });
+    } catch (error) {
+      console.error('UserService -> removeById -> email sending error:', error);
+      // Continue execution even if email fails
+    }
 
     return createSuccessResult(data, 'User deleted successfully');
   }
