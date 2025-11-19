@@ -1,6 +1,7 @@
 import { createErrorResult, createSuccessResult, ServiceResult } from '@/common/interfaces';
 import { HashService } from '@/util/hash.service';
 import { NotificationService } from '@/util/notification.service';
+import { TemplateService } from '@/util/template.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -28,6 +29,9 @@ export class UserService {
 
   @Inject()
   private readonly notificationService: NotificationService;
+
+  @Inject()
+  private readonly templateService: TemplateService;
 
   @Inject(DbService)
   private readonly db: DbService;
@@ -283,49 +287,22 @@ export class UserService {
     const data = await this.getUserProfile(user.id);
 
     // Send email notification (non-blocking, let errors bubble if critical)
-    this.notificationService.sendEmail({
-      to: user.email,
-      subject: `User Creation Success`,
-      html: `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>User Creation Success</title>
-			</head>
-			<body>
-				<div style="background-color: #f4f4f4; padding: 20px;">
-					<div style="max-width: 600px; margin: 0 auto; background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+    try {
+      const emailHtml = await this.templateService.renderTemplate('user-creation-credentials', {
+        userName: dto.name,
+        userEmail: dto.email,
+        userPassword: dto.password,
+      });
 
-						<div style="text-align: center; padding: 20px;">
-							<h1>User Created</h1>
-						</div>
-
-						<div style="padding: 20px;">
-							<p>Hello ${dto.name},</p>
-							<p>An admin user account has been successfully created in the system. Here are the details:</p>
-
-							<h2>User Login Details:</h2>
-							<ul>
-								<li>Full Name: ${dto.name}</li>
-								<li>Email Address: ${dto.email}</li>
-								<li>Password: ${dto.password}</li>
-							</ul>
-
-							<p>If you have any questions or need further assistance, please don't hesitate to contact us.</p>
-
-							<p>Thank you for using our admin panel.</p>
-
-							<p>Best regards,</p>
-							<p>Example</p>
-						</div>
-					</div>
-				</div>
-			</body>
-			</html>
-			`,
-    });
+      this.notificationService.sendEmail({
+        to: user.email,
+        subject: 'User Creation Success',
+        html: emailHtml,
+      });
+    } catch (error) {
+      console.error('UserService -> save -> email sending error:', error);
+      // Continue execution even if email fails
+    }
 
     return createSuccessResult(data, 'User created successfully');
   }

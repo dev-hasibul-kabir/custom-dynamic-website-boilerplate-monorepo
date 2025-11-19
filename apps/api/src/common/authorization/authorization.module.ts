@@ -9,4 +9,3 @@ import { DbModule } from '@/db/db.module';
   exports: [AbilityFactory],
 })
 export class AuthorizationModule {}
-

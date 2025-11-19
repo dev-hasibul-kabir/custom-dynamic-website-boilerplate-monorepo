@@ -8,6 +8,7 @@ import { FileUploadService } from './file-upload.service';
 import { NotificationService } from './notification.service';
 import { NotificationProcessor } from './notification.processor';
 import { MailerService } from './mailer.service';
+import { TemplateService } from './template.service';
 
 const modules = [
   UtilityService,
@@ -17,6 +18,7 @@ const modules = [
   NotificationService,
   NotificationProcessor,
   MailerService,
+  TemplateService,
 ];
 
 @Global()
