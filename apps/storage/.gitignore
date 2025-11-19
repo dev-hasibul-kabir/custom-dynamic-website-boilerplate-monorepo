@@ -31,3 +31,6 @@ yarn-error.log*
 # TypeScript build output
 /dist
 *.tsbuildinfo
+
+# External files
+/external/*
