@@ -7,10 +7,7 @@ export class HashService {
     return await argon.hash(password);
   }
 
-  async matchHash(
-    password: string,
-    hash: string,
-  ) {
+  async matchHash(password: string, hash: string) {
     return await argon.verify(hash, password);
   }
 }

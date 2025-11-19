@@ -6,17 +6,17 @@ import * as _ from 'lodash';
 
 @Processor('notification-queue')
 export class NotificationProcessor {
-	@Inject()
-	private readonly mailer: MailerService;
+  @Inject()
+  private readonly mailer: MailerService;
 
-	@Process('mail-send')
-	async sendMail(job: Job<IMailerPayload>) {
-		console.debug('processor: notification-queue -> process: mail-send -> starts', {
-			..._.pick(job, ['opts', 'name', 'data', 'id']),
-		});
+  @Process('mail-send')
+  async sendMail(job: Job<IMailerPayload>) {
+    console.debug('processor: notification-queue -> process: mail-send -> starts', {
+      ..._.pick(job, ['opts', 'name', 'data', 'id']),
+    });
 
-		const result = await this.mailer.sendMail(job.data);
+    const result = await this.mailer.sendMail(job.data);
 
-		console.debug('processor: notification-queue -> process: mail-send -> ends', { result });
-	}
+    console.debug('processor: notification-queue -> process: mail-send -> ends', { result });
+  }
 }

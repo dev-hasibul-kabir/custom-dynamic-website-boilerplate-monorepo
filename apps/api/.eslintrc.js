@@ -8,12 +8,8 @@ module.exports = {
 	},
 	plugins: ['@typescript-eslint/eslint-plugin', 'prettier'],
 	extends: [
-		'../.eslintrc.base.json',
-		'eslint:recommended',
-		'plugin:@typescript-eslint/recommended',
-		'plugin:@typescript-eslint/recommended-requiring-type-checking',
+		'@repo/eslint-config/nestjs',
 		'plugin:prettier/recommended',
-		'prettier',
 	],
 	env: {
 		node: true,

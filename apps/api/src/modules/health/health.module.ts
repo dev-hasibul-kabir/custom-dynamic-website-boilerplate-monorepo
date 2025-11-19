@@ -4,8 +4,7 @@ import { HealthController } from './health.controller';
 import { DbModule } from '@/db/db.module';
 
 @Module({
-	imports: [TerminusModule, DbModule],
-	controllers: [HealthController],
+  imports: [TerminusModule, DbModule],
+  controllers: [HealthController],
 })
 export class HealthModule {}
-

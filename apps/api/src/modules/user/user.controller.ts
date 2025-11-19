@@ -1,4 +1,4 @@
-import { GetUser, ModulePermission } from '@/common/decorators';
+import { CheckAbility, GetUser } from '@/common/decorators';
 import { JwtGuard, PermissionGuard } from '@/common/guards';
 import {
   Body,
@@ -13,10 +13,14 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { SignInUserDto, UserCreateDto, UserUpdateDto } from './dto';
+import {
+  AssignUserPermissionsDto,
+  AssignUserRolesDto,
+  SignInUserDto,
+  UserCreateDto,
+  UserUpdateDto,
+} from './dto';
 import { UserService } from './user.service';
-
-const moduleName = 'user';
 
 @Controller()
 export class UserController {
@@ -29,7 +33,7 @@ export class UserController {
     return await this.userService.signIn(dto);
   }
 
-  @ModulePermission(moduleName, 'create')
+  @CheckAbility({ subject: 'user', action: 'create' })
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Post('api/v1/users')
@@ -37,7 +41,7 @@ export class UserController {
     return await this.userService.save(dto);
   }
 
-  @ModulePermission(moduleName, 'read')
+  @CheckAbility({ subject: 'user', action: 'read' })
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Get('api/v1/users')
@@ -45,7 +49,7 @@ export class UserController {
     return await this.userService.getAll();
   }
 
-  @ModulePermission(moduleName, 'read')
+  @CheckAbility({ subject: 'user', action: 'read' })
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Get('api/v1/users/:id')
@@ -63,7 +67,7 @@ export class UserController {
     };
   }
 
-  @ModulePermission(moduleName, 'update')
+  @CheckAbility({ subject: 'user', action: 'update' })
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Put('api/v1/users/:id')
@@ -71,7 +75,23 @@ export class UserController {
     return await this.userService.editById(parseInt(id), dto);
   }
 
-  @ModulePermission(moduleName, 'delete')
+  @CheckAbility({ subject: 'user', action: 'update' })
+  @UseGuards(PermissionGuard)
+  @HttpCode(HttpStatus.OK)
+  @Put('api/v1/users/:id/roles')
+  async updateRoles(@Param('id') id: string, @Body() dto: AssignUserRolesDto) {
+    return await this.userService.updateRoles(parseInt(id), dto.roleIds);
+  }
+
+  @CheckAbility({ subject: 'user', action: 'update' })
+  @UseGuards(PermissionGuard)
+  @HttpCode(HttpStatus.OK)
+  @Put('api/v1/users/:id/permissions')
+  async updatePermissions(@Param('id') id: string, @Body() dto: AssignUserPermissionsDto) {
+    return await this.userService.updatePermissions(parseInt(id), dto.permissionIds);
+  }
+
+  @CheckAbility({ subject: 'user', action: 'delete' })
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)
   @Delete('api/v1/users/:id')

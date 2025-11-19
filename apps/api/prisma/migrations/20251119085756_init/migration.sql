@@ -14,6 +14,7 @@ CREATE TYPE "FileType" AS ENUM ('UNSPECIFIED', 'IMAGE', 'GIF', 'VIDEO', 'DOCUMEN
 CREATE TABLE "Role" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -23,13 +24,45 @@ CREATE TABLE "Role" (
 -- CreateTable
 CREATE TABLE "Permission" (
     "id" SERIAL NOT NULL,
-    "roleId" INTEGER NOT NULL,
-    "moduleName" TEXT NOT NULL,
-    "permissionType" TEXT NOT NULL,
+    "subject" TEXT NOT NULL,
+    "action" TEXT NOT NULL,
+    "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Permission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RolePermission" (
+    "id" SERIAL NOT NULL,
+    "roleId" INTEGER NOT NULL,
+    "permissionId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "RolePermission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserRole" (
+    "userId" INTEGER NOT NULL,
+    "roleId" INTEGER NOT NULL,
+    "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "assignedBy" INTEGER,
+
+    CONSTRAINT "UserRole_pkey" PRIMARY KEY ("userId","roleId")
+);
+
+-- CreateTable
+CREATE TABLE "UserPermission" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "permissionId" INTEGER NOT NULL,
+    "grantedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "grantedBy" INTEGER,
+
+    CONSTRAINT "UserPermission_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -38,7 +71,6 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "roleId" INTEGER NOT NULL,
     "otp" TEXT,
     "otpAttemptCount" INTEGER DEFAULT 0,
     "phone" VARCHAR(17),
@@ -80,7 +112,16 @@ CREATE TABLE "File" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Permission_roleId_moduleName_permissionType_key" ON "Permission"("roleId", "moduleName", "permissionType");
+CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Permission_subject_action_key" ON "Permission"("subject", "action");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RolePermission_roleId_permissionId_key" ON "RolePermission"("roleId", "permissionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserPermission_userId_permissionId_key" ON "UserPermission"("userId", "permissionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
@@ -95,10 +136,22 @@ CREATE UNIQUE INDEX "Folder_name_key" ON "Folder"("name");
 CREATE UNIQUE INDEX "File_name_folderId_key" ON "File"("name", "folderId");
 
 -- AddForeignKey
-ALTER TABLE "Permission" ADD CONSTRAINT "Permission_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "Permission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserPermission" ADD CONSTRAINT "UserPermission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserPermission" ADD CONSTRAINT "UserPermission_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "Permission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "File" ADD CONSTRAINT "File_folderId_fkey" FOREIGN KEY ("folderId") REFERENCES "Folder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

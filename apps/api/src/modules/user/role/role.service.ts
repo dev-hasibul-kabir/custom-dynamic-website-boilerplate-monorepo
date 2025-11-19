@@ -1,14 +1,41 @@
 import { createErrorResult, createSuccessResult, ServiceResult } from '@/common/interfaces';
 import { Injectable, Inject } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { DbService } from '@/db/db.service';
 import { CreateRoleDto, UpdateRoleDto } from './dto';
+
+type RoleWithRelations = Prisma.RoleGetPayload<{
+  include: {
+    rolePermissions: { include: { permission: true } };
+    userRoles: {
+      include: {
+        user: {
+          select: {
+            id: true;
+            name: true;
+            email: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 
 @Injectable()
 export class RoleService {
   constructor(@Inject(DbService) private readonly db: DbService) {}
 
+  private mapRole(role: RoleWithRelations) {
+    const { rolePermissions, userRoles, ...rest } = role;
+
+    return {
+      ...rest,
+      permissions: rolePermissions.map(({ permission }) => permission),
+      users: userRoles.map(({ user }) => user),
+    };
+  }
+
   async save(dto: CreateRoleDto): Promise<ServiceResult> {
-    // Single operation - use Prisma directly (no transaction needed)
     const data = await this.db.role.create({
       data: dto,
     });
@@ -17,18 +44,31 @@ export class RoleService {
   }
 
   async getAll(): Promise<ServiceResult> {
-    // Single operation - use Prisma directly
-    const data = await this.db.role.findMany({
+    const roles = await this.db.role.findMany({
       include: {
-        permissions: true,
+        rolePermissions: {
+          include: { permission: true },
+        },
+        userRoles: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
+
+    const data = roles.map(role => this.mapRole(role));
 
     return createSuccessResult(data, 'Roles retrieved successfully');
   }
 
   async getById(id: number): Promise<ServiceResult> {
-    // Business logic validation
     if (!id || id <= 0) {
       return createErrorResult(
         { name: 'badRequest', message: 'Invalid role ID' },
@@ -36,24 +76,34 @@ export class RoleService {
       );
     }
 
-    // Single operation - use Prisma directly
-    const data = await this.db.role.findFirst({
+    const role = await this.db.role.findFirst({
       where: { id },
       include: {
-        permissions: true,
+        rolePermissions: {
+          include: { permission: true },
+        },
+        userRoles: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    // Business logic: check if role exists
-    if (!data) {
+    if (!role) {
       return createErrorResult({ name: 'badRequest', message: 'Role not found' }, 'Role not found');
     }
 
-    return createSuccessResult(data, 'Role retrieved successfully');
+    return createSuccessResult(this.mapRole(role), 'Role retrieved successfully');
   }
 
   async editById(id: number, dto: UpdateRoleDto): Promise<ServiceResult> {
-    // Business logic validation
     if (!id || id <= 0) {
       return createErrorResult(
         { name: 'badRequest', message: 'Invalid role ID' },
@@ -61,7 +111,6 @@ export class RoleService {
       );
     }
 
-    // Single operation - use Prisma directly
     const data = await this.db.role.update({
       where: { id },
       data: dto,
@@ -71,7 +120,6 @@ export class RoleService {
   }
 
   async removeById(id: number): Promise<ServiceResult> {
-    // Business logic validation
     if (!id || id <= 0) {
       return createErrorResult(
         { name: 'badRequest', message: 'Invalid role ID' },
@@ -79,11 +127,96 @@ export class RoleService {
       );
     }
 
-    // Single operation - use Prisma directly
     const data = await this.db.role.delete({
       where: { id },
     });
 
     return createSuccessResult(data, 'Role deleted successfully');
+  }
+
+  async syncPermissions(id: number, permissionIds: number[]): Promise<ServiceResult> {
+    if (!id || id <= 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Invalid role ID' },
+        'Invalid role ID provided',
+      );
+    }
+
+    const role = await this.db.role.findUnique({ where: { id } });
+
+    if (!role) {
+      return createErrorResult({ name: 'badRequest', message: 'Role not found' }, 'Role not found');
+    }
+
+    const normalizedPermissionIds = Array.from(new Set(permissionIds));
+
+    const permissions = await this.db.permission.findMany({
+      where: { id: { in: normalizedPermissionIds } },
+      select: { id: true },
+    });
+
+    if (permissions.length !== normalizedPermissionIds.length) {
+      const existingPermissionIds = permissions.map(permission => permission.id);
+      const missingPermissionIds = normalizedPermissionIds.filter(
+        permissionId => !existingPermissionIds.includes(permissionId),
+      );
+
+      return createErrorResult(
+        {
+          name: 'badRequest',
+          message: `Invalid permission IDs: ${missingPermissionIds.join(', ')}`,
+        },
+        'Invalid permission selection',
+      );
+    }
+
+    await this.db.$transaction(async tx => {
+      await tx.rolePermission.deleteMany({
+        where: {
+          roleId: id,
+          permissionId: { notIn: normalizedPermissionIds },
+        },
+      });
+
+      await Promise.all(
+        normalizedPermissionIds.map(permissionId =>
+          tx.rolePermission.upsert({
+            where: {
+              roleId_permissionId: {
+                roleId: id,
+                permissionId,
+              },
+            },
+            update: {},
+            create: {
+              roleId: id,
+              permissionId,
+            },
+          }),
+        ),
+      );
+    });
+
+    const updatedRole = await this.db.role.findFirst({
+      where: { id },
+      include: {
+        rolePermissions: {
+          include: { permission: true },
+        },
+        userRoles: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return createSuccessResult(this.mapRole(updatedRole), 'Role permissions updated successfully');
   }
 }

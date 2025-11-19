@@ -1,30 +1,33 @@
-import {
-  IsNumber,
-  IsPositive,
-  IsString,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreatePermissionDto {
-  @IsNumber()
-  @IsPositive()
-  roleId: number;
+  @IsString()
+  @IsNotEmpty()
+  subject: string;
 
   @IsString()
   @IsNotEmpty()
-  moduleName: string;
+  action: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  permissionType: string;
+  @MaxLength(255)
+  description?: string;
 }
 
 export class UpdatePermissionDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  moduleName: string;
+  subject?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  permissionType: string;
+  action?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  description?: string;
 }

@@ -9,7 +9,7 @@ import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
-	controllers: [RoleController, PermissionController, UserController],
-	providers: [RoleService, PermissionService, UserService, JwtService],
+  controllers: [RoleController, PermissionController, UserController],
+  providers: [RoleService, PermissionService, UserService, JwtService],
 })
 export class UserModule {}

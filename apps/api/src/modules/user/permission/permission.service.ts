@@ -1,118 +1,192 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DbService } from '@/db/db.service';
-import { ConstantService } from '@/util/constant.service';
 import { CreatePermissionDto, UpdatePermissionDto } from './dto';
 import { createSuccessResult, createErrorResult, ServiceResult } from '@/common/interfaces';
 
 @Injectable()
 export class PermissionService {
-	@Inject()
-	private readonly constant: ConstantService;
+  @Inject(DbService)
+  private readonly db: DbService;
 
-	@Inject(DbService)
-	private readonly db: DbService;
+  private formatLabel(value: string) {
+    return value
+      .split(/[-_]/)
+      .filter(Boolean)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
 
-	async save(dto: CreatePermissionDto): Promise<ServiceResult> {
-		// Single operation - use Prisma directly
-		const data = await this.db.permission.create({
-			data: dto,
-		});
+  async save(dto: CreatePermissionDto): Promise<ServiceResult> {
+    const data = await this.db.permission.create({
+      data: {
+        subject: dto.subject,
+        action: dto.action,
+        description: dto.description,
+      },
+    });
 
-		return createSuccessResult(data, 'Permission created successfully');
-	}
+    return createSuccessResult(data, 'Permission created successfully');
+  }
 
-	async getAllModuleNames(): Promise<ServiceResult> {
-		// This is a simple constant lookup, no DB operation
-		const result = this.constant.getModuleNameList();
+  async getAllModuleNames(): Promise<ServiceResult> {
+    const subjects = await this.db.permission.findMany({
+      distinct: ['subject'],
+      select: { subject: true },
+      orderBy: { subject: 'asc' },
+    });
 
-		return createSuccessResult(result, 'Module names retrieved successfully');
-	}
+    const result = subjects.map(({ subject }) => ({
+      value: subject,
+      label: this.formatLabel(subject),
+    }));
 
-	async getAllPermissionTypes(): Promise<ServiceResult> {
-		// This is a simple constant lookup, no DB operation
-		const result = this.constant.getPermissionTypeList();
+    return createSuccessResult(result, 'Module names retrieved successfully');
+  }
 
-		return createSuccessResult(result, 'Permission types retrieved successfully');
-	}
+  async getAllPermissionTypes(): Promise<ServiceResult> {
+    const actions = await this.db.permission.findMany({
+      distinct: ['action'],
+      select: { action: true },
+      orderBy: { action: 'asc' },
+    });
 
-	async getAll(roleId: number | null): Promise<ServiceResult> {
-		// Single operation - use Prisma directly
-		const data = !roleId
-			? await this.db.permission.findMany({
-					include: {
-						role: true,
-					},
-				})
-			: await this.db.permission.findMany({
-					where: { roleId },
-					include: {
-						role: true,
-					},
-				});
+    const result = actions.map(({ action }) => ({
+      value: action,
+      label: this.formatLabel(action),
+    }));
 
-		return createSuccessResult(data, 'Permissions retrieved successfully');
-	}
+    return createSuccessResult(result, 'Permission types retrieved successfully');
+  }
 
-	async getById(id: number): Promise<ServiceResult> {
-		// Business logic validation
-		if (!id || id <= 0) {
-			return createErrorResult(
-				{ name: 'badRequest', message: 'Invalid permission ID' },
-				'Invalid permission ID provided',
-			);
-		}
+  async getAll(roleId: number | null): Promise<ServiceResult> {
+    if (!roleId) {
+      const data = await this.db.permission.findMany({
+        include: {
+          rolePermissions: {
+            include: {
+              role: true,
+            },
+          },
+        },
+      });
 
-		// Single operation - use Prisma directly
-		const data = await this.db.permission.findFirst({
-			where: { id },
-			include: {
-				role: true,
-			},
-		});
+      return createSuccessResult(data, 'Permissions retrieved successfully');
+    }
 
-		// Business logic: check if permission exists
-		if (!data) {
-			return createErrorResult(
-				{ name: 'badRequest', message: 'Permission not found' },
-				'Permission not found',
-			);
-		}
+    const role = await this.db.role.findUnique({
+      where: { id: roleId },
+      select: { id: true, name: true, description: true },
+    });
 
-		return createSuccessResult(data, 'Permission retrieved successfully');
-	}
+    if (!role) {
+      return createErrorResult({ name: 'badRequest', message: 'Role not found' }, 'Role not found');
+    }
 
-	async editById(id: number, dto: UpdatePermissionDto): Promise<ServiceResult> {
-		// Business logic validation
-		if (!id || id <= 0) {
-			return createErrorResult(
-				{ name: 'badRequest', message: 'Invalid permission ID' },
-				'Invalid permission ID provided',
-			);
-		}
+    const rolePermissions = await this.db.rolePermission.findMany({
+      where: { roleId },
+      include: {
+        permission: true,
+      },
+    });
 
-		// Single operation - use Prisma directly
-		const data = await this.db.permission.update({
-			where: { id },
-			data: dto,
-		});
+    const data = rolePermissions.map(({ permission }) => ({
+      ...permission,
+      role,
+    }));
 
-		return createSuccessResult(data, 'Permission updated successfully');
-	}
+    return createSuccessResult(data, 'Role permissions retrieved successfully');
+  }
 
-	async removeById(id: number): Promise<ServiceResult> {
-		// Business logic validation
-		if (!id || id <= 0) {
-			return createErrorResult(
-				{ name: 'badRequest', message: 'Invalid permission ID' },
-				'Invalid permission ID provided',
-			);
-		}
+  async getCatalog(): Promise<ServiceResult> {
+    const permissions = await this.db.permission.findMany({
+      orderBy: [{ subject: 'asc' }, { action: 'asc' }],
+    });
 
-		// Single operation - use Prisma directly
-		const data = await this.db.permission.delete({
-			where: { id },
-		});
+    const grouped = permissions.reduce((acc, permission) => {
+      if (!acc.has(permission.subject)) {
+        acc.set(permission.subject, {
+          subject: permission.subject,
+          label: this.formatLabel(permission.subject),
+          permissions: [],
+        });
+      }
 
-		return createSuccessResult(data, 'Permission deleted successfully');
-	}
+      acc.get(permission.subject).permissions.push({
+        id: permission.id,
+        action: permission.action,
+        label: this.formatLabel(permission.action),
+        description: permission.description,
+      });
+
+      return acc;
+    }, new Map<string, any>());
+
+    const catalog = Array.from(grouped.values());
+
+    return createSuccessResult(catalog, 'Permission catalog retrieved successfully');
+  }
+
+  async getById(id: number): Promise<ServiceResult> {
+    // Business logic validation
+    if (!id || id <= 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Invalid permission ID' },
+        'Invalid permission ID provided',
+      );
+    }
+
+    const data = await this.db.permission.findFirst({
+      where: { id },
+      include: {
+        rolePermissions: {
+          include: {
+            role: true,
+          },
+        },
+      },
+    });
+
+    // Business logic: check if permission exists
+    if (!data) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Permission not found' },
+        'Permission not found',
+      );
+    }
+
+    return createSuccessResult(data, 'Permission retrieved successfully');
+  }
+
+  async editById(id: number, dto: UpdatePermissionDto): Promise<ServiceResult> {
+    // Business logic validation
+    if (!id || id <= 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Invalid permission ID' },
+        'Invalid permission ID provided',
+      );
+    }
+
+    const data = await this.db.permission.update({
+      where: { id },
+      data: dto,
+    });
+
+    return createSuccessResult(data, 'Permission updated successfully');
+  }
+
+  async removeById(id: number): Promise<ServiceResult> {
+    // Business logic validation
+    if (!id || id <= 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Invalid permission ID' },
+        'Invalid permission ID provided',
+      );
+    }
+
+    const data = await this.db.permission.delete({
+      where: { id },
+    });
+
+    return createSuccessResult(data, 'Permission deleted successfully');
+  }
 }

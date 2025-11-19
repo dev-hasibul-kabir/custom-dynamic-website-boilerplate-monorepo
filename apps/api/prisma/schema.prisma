@@ -11,26 +11,66 @@ datasource db {
 }
 
 model Role {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  users       User[]
-  permissions Permission[]
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
 }
 
 model Permission {
-  id             Int      @id @default(autoincrement())
-  roleId         Int
-  moduleName     String
-  permissionType String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  subject     String
+  action      String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  role Role @relation(fields: [roleId], references: [id])
+  rolePermissions RolePermission[]
+  userPermissions UserPermission[]
 
-  @@unique([roleId, moduleName, permissionType])
+  @@unique([subject, action])
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model UserRole {
+  userId    Int
+  roleId    Int
+  assignedAt DateTime @default(now())
+  assignedBy Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model UserPermission {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  permissionId Int
+  grantedAt    DateTime   @default(now())
+  grantedBy    Int?
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
 }
 
 enum Gender {
@@ -46,23 +86,23 @@ enum UserStatus {
 }
 
 model User {
-  id              Int        @id @default(autoincrement())
+  id              Int              @id @default(autoincrement())
   name            String
-  email           String     @unique
+  email           String           @unique
   password        String
-  roleId          Int
   otp             String?
-  otpAttemptCount Int?       @default(0)
-  phone           String?    @db.VarChar(17)
-  nid             String?    @db.VarChar(17)
+  otpAttemptCount Int?             @default(0)
+  phone           String?          @db.VarChar(17)
+  nid             String?          @db.VarChar(17)
   dateOfBirth     String?
-  gender          Gender?    @default(OTHER)
-  address         String?    @db.Text
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  status          UserStatus @default(PENDING)
+  gender          Gender?          @default(OTHER)
+  address         String?          @db.Text
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  status          UserStatus       @default(PENDING)
 
-  role Role @relation(fields: [roleId], references: [id])
+  roles       UserRole[]
+  permissions UserPermission[]
 }
 
 enum GeneralStatus {

@@ -1,51 +1,50 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import * as _ from 'lodash';
 import { JwtGuard } from './jwt.guard';
+import { AbilityFactory } from '@/common/authorization/ability.factory';
+import { CHECK_ABILITY_KEY, RequiredAbility } from '@/common/decorators';
 
 @Injectable()
 export class PermissionGuard extends JwtGuard implements CanActivate {
-	constructor(private reflector: Reflector) {
-		super();
-	}
+  constructor(
+    private reflector: Reflector,
+    private readonly abilityFactory: AbilityFactory,
+  ) {
+    super();
+  }
 
-	async canActivate(context: ExecutionContext): Promise<boolean> {
-		await super.canActivate(context);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    await super.canActivate(context);
 
-		const modulePermission = this.reflector.get<string>(
-			'ModulePermission',
-			context.getHandler(),
-		);
-		const request = context.switchToHttp().getRequest();
-		const { user } = request;
-		const { role } = user;
+    const requirements =
+      this.reflector.getAllAndOverride<RequiredAbility[]>(CHECK_ABILITY_KEY, [
+        context.getHandler(),
+        context.getClass(),
+      ]) ?? [];
 
-		if (!role) {
-			return false;
-		}
+    if (requirements.length === 0) {
+      return true;
+    }
 
-		// For only super admin role we wil bypass the permission check
-		if (role.name === 'Super Admin' && user.name === 'Super Admin') {
-			return true;
-		}
+    const request = context.switchToHttp().getRequest();
+    const { user } = request;
 
-		const { permissions } = role;
+    if (!user || !user.id) {
+      return false;
+    }
 
-		if (!permissions || permissions.length === 0) {
-			return false;
-		}
+    const ability = await this.abilityFactory.createForUser(user.id);
 
-		if (
-			!_.some(permissions, permission => {
-				return (
-					_.isEqual(permission.moduleName, modulePermission[0]) &&
-					_.isEqual(permission.permissionType, modulePermission[1])
-				);
-			})
-		)
-			return false;
+    request.ability = ability;
 
-		return true;
-	}
+    const hasAccess = requirements.every(requirement =>
+      ability.can(requirement.action, requirement.subject),
+    );
+
+    if (!hasAccess) {
+      throw new ForbiddenException('You do not have permission to perform this action');
+    }
+
+    return true;
+  }
 }
-

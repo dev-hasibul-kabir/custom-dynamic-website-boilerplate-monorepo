@@ -47,17 +47,19 @@ export const getUserManagementFields = (roles: { id: number; name: string }[]): 
         },
     },
     {
-        type: 'select-sync',
-        name: 'roleId',
-        placeholder: 'Select a role!',
-        title: 'Role',
+        type: 'multi-select-sync',
+        name: 'roleIds',
+        placeholder: 'Select roles!',
+        title: 'Roles',
         initialValue: null,
         options: _.map(roles, (role: { id: number; name: string }) => ({
             value: role.id,
             label: role.name,
         })),
         validate: (values: any) => {
-            if (!values.roleId) return 'Required!';
+            if (!values.roleIds || !Array.isArray(values.roleIds) || values.roleIds.length === 0) {
+                return 'At least one role is required!';
+            }
 
             return null;
         },
@@ -126,7 +128,6 @@ const Page = () => {
                                         'password',
                                         'otp',
                                         'otpAttemptCount',
-                                        'roleId',
                                         'phone',
                                         'nid',
                                         'dateOfBirth',
@@ -134,23 +135,49 @@ const Page = () => {
                                         'address',
                                         'createdAt',
                                         'updatedAt',
+                                        'directPermissions',
+                                        'primaryRole',
                                     ],
                                     scopedColumns: {
                                         status: (item: any) => (
                                             <Badge variant={getBadgeVariant(item.status)}>{item.status}</Badge>
                                         ),
+                                        roles: (item: any) => {
+                                            if (!item.roles || !Array.isArray(item.roles)) return '-';
+                                            const roleNames = item.roles.map((role: any) => role.name).join(', ');
+                                            return roleNames || '-';
+                                        },
                                     },
                                     actionIdentifier: 'id',
                                     onDataModify: data =>
-                                        _.map(data, datum => ({
-                                            ...datum,
-                                            role: datum.role.name,
-                                        })),
+                                        _.map(data, datum => {
+                                            // Transform roles array to roleIds array for edit form
+                                            const roleIds = Array.isArray(datum.roles)
+                                                ? datum.roles.map((role: any) => role.id || role)
+                                                : [];
+                                            return {
+                                                ...datum,
+                                                roleIds,
+                                            };
+                                        }),
                                 }}
                                 addNew={{
                                     uri: `/api/v1/users`,
                                 }}
-                                viewOne={{ uri: '/api/v1/users/{id}', identifier: '{id}' }}
+                                viewOne={{
+                                    uri: '/api/v1/users/{id}',
+                                    identifier: '{id}',
+                                    onDataModify: (datum: any) => {
+                                        // Transform roles array to roleIds array for edit form
+                                        const roleIds = Array.isArray(datum.roles)
+                                            ? datum.roles.map((role: any) => role.id || role)
+                                            : [];
+                                        return {
+                                            ...datum,
+                                            roleIds,
+                                        };
+                                    },
+                                }}
                                 editExisting={{ uri: '/api/v1/users/{id}', identifier: '{id}' }}
                                 removeOne={{
                                     uri: '/api/v1/users/{id}',

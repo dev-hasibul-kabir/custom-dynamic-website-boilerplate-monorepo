@@ -1,9 +1,22 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
 
-class RoleNameDto {
+class RoleDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  description?: string;
 }
 
-export { RoleNameDto as CreateRoleDto, RoleNameDto as UpdateRoleDto };
+export { RoleDto as CreateRoleDto, RoleDto as UpdateRoleDto };
+
+export class AssignRolePermissionsDto {
+  @IsArray()
+  @Type(() => Number)
+  @IsInt({ each: true })
+  permissionIds: number[];
+}

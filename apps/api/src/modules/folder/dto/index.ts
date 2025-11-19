@@ -3,13 +3,13 @@ import { PartialType } from '@nestjs/mapped-types';
 import { GeneralStatus } from '@prisma/client';
 
 export class CreateFolderDto {
-	@IsString()
-	@IsNotEmpty()
-	name: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-	@IsEnum(GeneralStatus)
-	@IsNotEmpty()
-	status: GeneralStatus;
+  @IsEnum(GeneralStatus)
+  @IsNotEmpty()
+  status: GeneralStatus;
 }
 
 export class UpdateFolderDto extends PartialType(CreateFolderDto) {}

@@ -22,12 +22,34 @@ const Page = () => {
                             subtitle="Manage role here!"
                             viewAll={{
                                 uri: `/api/v1/roles`,
-                                ignoredColumns: ['id', 'type', 'permissions', 'createdAt', 'updatedAt'],
+                                ignoredColumns: [
+                                    'id',
+                                    'type',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
+                                scopedColumns: {
+                                    users: (item: any) => {
+                                        if (!item.users || !Array.isArray(item.users) || item.users.length === 0) {
+                                            return <span className="text-muted-foreground">No users</span>;
+                                        }
+                                        const userNames = item.users
+                                            .map((user: any) => user.name || user.email)
+                                            .join(', ');
+                                        return <span>{userNames}</span>;
+                                    },
+                                    permissions: (item: any) => {
+                                        if (!item.permissions || !Array.isArray(item.permissions)) {
+                                            return <span>0</span>;
+                                        }
+                                        return <span>{item.permissions.length} permission{item.permissions.length !== 1 ? 's' : ''}</span>;
+                                    },
+                                },
                                 actionIdentifier: 'id',
                                 onDataModify: data =>
                                     _.map(data, datum => ({
                                         ...datum,
-                                        permissions: null,
+                                        // Keep permissions and users for scopedColumns display
                                     })),
                             }}
                             addNew={{
@@ -61,6 +83,14 @@ const Page = () => {
 
                                         return null;
                                     },
+                                },
+                                {
+                                    type: 'textarea',
+                                    name: 'description',
+                                    placeholder: 'Enter a description (optional)!',
+                                    title: 'Description',
+                                    initialValue: null,
+                                    validate: () => null,
                                 },
                             ]}
                         />
