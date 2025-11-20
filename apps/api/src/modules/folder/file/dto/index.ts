@@ -1,10 +1,13 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 import { FileType, GeneralStatus } from '@prisma/client';
 
 export class FileDto {
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
-  folderId: string;
+  folderId: number;
 
   @IsEnum(FileType)
   @IsOptional()

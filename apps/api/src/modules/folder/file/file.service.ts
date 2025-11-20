@@ -16,7 +16,7 @@ export class FileService {
 
   async save(dto: FileDto): Promise<ServiceResult> {
     // Business logic validation
-    if (!dto.folderId) {
+    if (!dto.folderId || typeof dto.folderId !== 'number' || dto.folderId <= 0) {
       return createErrorResult(
         { name: 'badRequest', message: 'Folder ID is required' },
         'Folder ID is required',
@@ -39,7 +39,7 @@ export class FileService {
 
     // Check if folder exists first (business logic validation)
     const folder = await this.db.folder.findUnique({
-      where: { id: parseInt(dto.folderId) },
+      where: { id: dto.folderId },
     });
 
     // Business logic: check if folder exists
@@ -54,7 +54,7 @@ export class FileService {
     const data = await this.db.file.create({
       data: {
         ...dto,
-        folderId: parseInt(dto.folderId),
+        folderId: dto.folderId,
         name: dto.name,
         url: dto.url,
       },

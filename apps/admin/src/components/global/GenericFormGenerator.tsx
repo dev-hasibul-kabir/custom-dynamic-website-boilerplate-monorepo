@@ -37,7 +37,6 @@ export interface IField {
   maxFileSize?: number; // only for file select
   multiple?: boolean; // only for file select (default: true)
   allowedExtensions?: string[]; // only for file select (e.g., ['jpg', 'png'] or ['pdf', 'docx'])
-  folderName?: string; // only for file select - storage folder organization
   isDisabled?: boolean;
   show?: (values: FormikValues) => boolean;
   validate?: (values: FormikValues) => string | null;
@@ -553,7 +552,6 @@ export default function GenericFormGenerator({
           errorMessage={errorMessage}
           multiple={field.multiple ?? true}
           allowedExtensions={field.allowedExtensions}
-          folderName={field.folderName}
           onUploadComplete={(urls: string[]) => {
             formik.setFieldValue(
               field.name,

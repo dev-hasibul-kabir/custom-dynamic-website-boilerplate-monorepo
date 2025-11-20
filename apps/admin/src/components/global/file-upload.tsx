@@ -4,8 +4,9 @@ import { UploadFileResponse, uploadFileToStorage } from '@/apis';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { File as FileIcon, Image as ImageIcon, Upload, X } from 'lucide-react';
+import { File as FileIcon, Image as ImageIcon, Link as LinkIcon, Upload, X } from 'lucide-react';
 import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 export interface FileItem {
@@ -37,7 +38,6 @@ interface FileSelectFieldProps {
   errorMessage?: string;
   multiple?: boolean;
   allowedExtensions?: string[];
-  folderName?: string;
   onUploadComplete?: (urls: string[]) => void;
 }
 
@@ -57,12 +57,13 @@ const FileSelectField = forwardRef<FileSelectFieldRef, FileSelectFieldProps>(
       errorMessage = '',
       multiple = true,
       allowedExtensions,
-      folderName,
       onUploadComplete,
     },
     ref,
   ) => {
     const [selectedFiles, setSelectedFiles] = useState<FileItem[]>([]);
+    const [urlInput, setUrlInput] = useState('');
+    const [activeTab, setActiveTab] = useState('upload');
     const fileInputRef = useRef<HTMLInputElement>(null);
     const uploadAbortControllers = useRef<Map<string, AbortController>>(new Map());
 
@@ -146,6 +147,50 @@ const FileSelectField = forwardRef<FileSelectFieldRef, FileSelectFieldProps>(
       return null;
     };
 
+    const validateUrl = (url: string): string | null => {
+      if (!url || url.trim().length === 0) {
+        return 'URL is required';
+      }
+
+      try {
+        const urlObj = new URL(url);
+        if (!['http:', 'https:'].includes(urlObj.protocol)) {
+          return 'URL must start with http:// or https://';
+        }
+        return null;
+      } catch {
+        return 'Invalid URL format';
+      }
+    };
+
+    const handleUrlAdd = () => {
+      const validationError = validateUrl(urlInput);
+      if (validationError) {
+        setFieldError(name, validationError);
+        return;
+      }
+
+      const trimmedUrl = urlInput.trim();
+      const newFileItem: FileItem = {
+        id: `url-${Date.now()}-${Math.random()}`,
+        file: null,
+        preview: trimmedUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? trimmedUrl : null,
+        url: trimmedUrl,
+        status: 'success',
+      };
+
+      setSelectedFiles(prev => {
+        const updated = multiple ? [...prev, newFileItem] : [newFileItem];
+        const fileValues = updated.map(item => item.file || item.url).filter(Boolean);
+        setFieldValue(name, multiple ? fileValues : fileValues[0] || null);
+        setFieldTouched(name, true);
+        setFieldError(name, '');
+        return updated;
+      });
+
+      setUrlInput('');
+    };
+
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
       if (!files || files.length === 0) return;
@@ -225,7 +270,6 @@ const FileSelectField = forwardRef<FileSelectFieldRef, FileSelectFieldProps>(
         try {
           const response: UploadFileResponse = await uploadFileToStorage({
             file: fileItem.file,
-            folderName,
             onUploadProgress: progress => {
               setSelectedFiles(prev =>
                 prev.map(item => (item.id === fileItem.id ? { ...item, progress } : item)),
@@ -279,7 +323,7 @@ const FileSelectField = forwardRef<FileSelectFieldRef, FileSelectFieldProps>(
       }
 
       return allUrls;
-    }, [selectedFiles, folderName, name, setFieldValue, multiple, onUploadComplete]);
+    }, [selectedFiles, name, setFieldValue, multiple, onUploadComplete]);
 
     const hasPendingUploads = useCallback((): boolean => {
       return selectedFiles.some(item => item.file && item.status === 'pending');
@@ -326,31 +370,69 @@ const FileSelectField = forwardRef<FileSelectFieldRef, FileSelectFieldProps>(
           )}
         >
           {selectedFiles.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-center">
-              <ImageIcon className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-sm text-muted-foreground mb-4">
-                {placeholder || 'Click to upload or drag and drop'}
-              </p>
-              <Input
-                ref={fileInputRef}
-                id={name}
-                type="file"
-                accept={acceptType}
-                multiple={multiple}
-                onChange={handleFileSelect}
-                disabled={isDisabled}
-                className="hidden"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isDisabled}
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                Choose {multiple ? 'Files' : 'File'}
-              </Button>
-            </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="upload">Upload File</TabsTrigger>
+                <TabsTrigger value="url">Enter URL</TabsTrigger>
+              </TabsList>
+              <TabsContent value="upload" className="mt-4">
+                <div className="flex flex-col items-center justify-center text-center">
+                  <ImageIcon className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {placeholder || 'Click to upload or drag and drop'}
+                  </p>
+                  <Input
+                    ref={fileInputRef}
+                    id={name}
+                    type="file"
+                    accept={acceptType}
+                    multiple={multiple}
+                    onChange={handleFileSelect}
+                    disabled={isDisabled}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isDisabled}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Choose {multiple ? 'Files' : 'File'}
+                  </Button>
+                </div>
+              </TabsContent>
+              <TabsContent value="url" className="mt-4">
+                <div className="flex flex-col items-center justify-center text-center space-y-4">
+                  <LinkIcon className="h-12 w-12 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Enter a URL to add a file</p>
+                  <div className="w-full max-w-md space-y-2">
+                    <Input
+                      type="url"
+                      placeholder="https://example.com/file.pdf"
+                      value={urlInput}
+                      onChange={e => setUrlInput(e.target.value)}
+                      disabled={isDisabled}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          handleUrlAdd();
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleUrlAdd}
+                      disabled={isDisabled || !urlInput.trim()}
+                      className="w-full"
+                    >
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      Add URL
+                    </Button>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           ) : (
             <div className="space-y-4">
               {selectedFiles.map(fileItem => (
@@ -413,16 +495,50 @@ const FileSelectField = forwardRef<FileSelectFieldRef, FileSelectFieldProps>(
                   )}
                 </div>
               ))}
-              {!isDisabled && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full"
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  Add {multiple ? 'More Files' : 'File'}
-                </Button>
+              {!isDisabled && multiple && (
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="upload">Upload File</TabsTrigger>
+                    <TabsTrigger value="url">Enter URL</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="upload" className="mt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full"
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      Add More Files
+                    </Button>
+                  </TabsContent>
+                  <TabsContent value="url" className="mt-4">
+                    <div className="space-y-2">
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/file.pdf"
+                        value={urlInput}
+                        onChange={e => setUrlInput(e.target.value)}
+                        disabled={isDisabled}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            handleUrlAdd();
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleUrlAdd}
+                        disabled={isDisabled || !urlInput.trim()}
+                        className="w-full"
+                      >
+                        <LinkIcon className="mr-2 h-4 w-4" />
+                        Add URL
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               )}
             </div>
           )}
