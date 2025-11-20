@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import envVariables from './env.js';
 import type { JwtPayload } from '../types/index.js';
+import envVariables from './env.js';
 
 export const generateToken = (payload: JwtPayload): string => {
   return jwt.sign(payload, envVariables.JWT_SECRET, {
@@ -22,7 +22,7 @@ export const verifyToken = (token: string): JwtPayload | null => {
 export const validateTokenPayload = (decoded: JwtPayload): boolean => {
   if (
     decoded.iss &&
-    decoded.iss === 'tripociate.com' &&
+    decoded.iss === 'example.com' &&
     decoded.sub &&
     decoded.email &&
     decoded.sub === decoded.email
@@ -31,4 +31,3 @@ export const validateTokenPayload = (decoded: JwtPayload): boolean => {
   }
   return false;
 };
-

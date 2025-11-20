@@ -1,6 +1,6 @@
+import envVariables from '@/utils/env.js';
 import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import envVariables from '../utils/env.js';
 
 const { combine, timestamp, colorize, errors, prettyPrint, simple } = format;
 const timestampFormat = { format: 'YYYY-MM-DD HH:mm:ss' };
@@ -12,20 +12,11 @@ export const debugLogger = createLogger({
     new DailyRotateFile({
       filename: envVariables.LOG_DIR_PATH + '/debug.log',
       level: 'debug',
-      format: combine(
-        timestamp(timestampFormat),
-        errors({ stack: true }),
-        prettyPrint(),
-      ),
+      format: combine(timestamp(timestampFormat), errors({ stack: true }), prettyPrint()),
     }),
     new transports.Console({
       level: 'debug',
-      format: combine(
-        colorize(),
-        timestamp(timestampFormat),
-        errors({ stack: true }),
-        simple(),
-      ),
+      format: combine(colorize(), timestamp(timestampFormat), errors({ stack: true }), simple()),
     }),
   ],
 });
@@ -37,11 +28,7 @@ export const infoLogger = createLogger({
     new DailyRotateFile({
       filename: envVariables.LOG_DIR_PATH + '/info.log',
       level: 'info',
-      format: combine(
-        timestamp(timestampFormat),
-        errors({ stack: true }),
-        prettyPrint(),
-      ),
+      format: combine(timestamp(timestampFormat), errors({ stack: true }), prettyPrint()),
     }),
   ],
 });
@@ -53,21 +40,11 @@ export const errorLogger = createLogger({
     new DailyRotateFile({
       filename: envVariables.LOG_DIR_PATH + '/error.log',
       level: 'error',
-      format: combine(
-        timestamp(timestampFormat),
-        errors({ stack: true }),
-        prettyPrint(),
-      ),
+      format: combine(timestamp(timestampFormat), errors({ stack: true }), prettyPrint()),
     }),
     new transports.Console({
       level: 'error',
-      format: combine(
-        colorize(),
-        timestamp(timestampFormat),
-        errors({ stack: true }),
-        simple(),
-      ),
+      format: combine(colorize(), timestamp(timestampFormat), errors({ stack: true }), simple()),
     }),
   ],
 });
-
