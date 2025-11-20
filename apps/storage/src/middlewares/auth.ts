@@ -1,12 +1,8 @@
-import type { Request, Response, NextFunction } from 'express';
-import { verifyToken, validateTokenPayload } from '../utils/jwt.js';
+import type { NextFunction, Request, Response } from 'express';
+import { validateTokenPayload, verifyToken } from '../utils/jwt.js';
 import { error } from '../utils/response.js';
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -20,9 +16,17 @@ export const authMiddleware = (
       return;
     }
 
-    const token = authHeader.startsWith('Bearer ')
-      ? authHeader.slice(7)
-      : authHeader;
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+
+    if (!token) {
+      res.status(401).json(
+        error({
+          name: 'unauthorized',
+          message: 'Token is missing',
+        }),
+      );
+      return;
+    }
 
     const decoded = verifyToken(token);
 
@@ -30,7 +34,8 @@ export const authMiddleware = (
       res.status(401).json(
         error({
           name: 'unauthorized',
-          message: 'Invalid or expired token',
+          message:
+            'Invalid or expired token. Ensure JWT_SECRET in storage app matches the API app.',
         }),
       );
       return;
@@ -40,7 +45,7 @@ export const authMiddleware = (
       res.status(401).json(
         error({
           name: 'unauthorized',
-          message: 'Invalid token payload',
+          message: 'Invalid token payload: email is required',
         }),
       );
       return;
@@ -48,7 +53,7 @@ export const authMiddleware = (
 
     req.user = decoded;
     next();
-  } catch {
+  } catch (err) {
     res.status(401).json(
       error({
         name: 'unauthorized',
@@ -57,4 +62,3 @@ export const authMiddleware = (
     );
   }
 };
-

@@ -23,40 +23,10 @@ export interface ErrorResponse {
   error?: unknown;
 }
 
-export interface FileUploadOptions {
-  folderName?: string | null;
-  fileName?: string | null;
-  allowedExtensions?: string[];
-  isConvertToWebp?: boolean;
-  quality?: number;
-  width?: number;
-  height?: number;
-  fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
-}
-
-export interface WebpOptions {
-  quality?: number;
-  width?: number;
-  height?: number;
-  fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
-}
-
-export interface FolderInfo {
-  name: string;
-  path: string;
-  url: string;
-}
-
 export interface FileInfo {
   name: string;
   url: string;
   localUrl?: string;
-}
-
-export interface FolderDetails {
-  name: string;
-  files: FileInfo[];
-  fileCount: number;
 }
 
 export interface ServiceResponse<T = unknown> {
@@ -64,4 +34,3 @@ export interface ServiceResponse<T = unknown> {
   data?: T;
   error?: Error | unknown;
 }
-

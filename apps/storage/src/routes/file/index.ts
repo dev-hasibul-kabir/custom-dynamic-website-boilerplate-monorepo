@@ -3,8 +3,6 @@ import multer from 'multer';
 import {
   uploadFile,
   fetchFile,
-  listFiles,
-  updateFile,
   deleteFile,
 } from '../../services/file.js';
 import { authMiddleware } from '../../middlewares/auth.js';
@@ -21,34 +19,7 @@ const upload = multer({
 
 /**
  * @swagger
- * /v1/content/folders/{folderName}/files:
- *   get:
- *     summary: List all files in a folder
- *     tags: [Files]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: folderName
- *         required: true
- *         schema:
- *           type: string
- *         description: Folder name
- *     responses:
- *       200:
- *         description: List of files
- *       401:
- *         description: Unauthorized
- */
-router.get(
-  '/v1/content/folders/:folderName/files',
-  authMiddleware,
-  listFiles,
-);
-
-/**
- * @swagger
- * /v1/content/files:
+ * /files:
  *   post:
  *     summary: Upload a file
  *     tags: [Files]
@@ -60,26 +31,42 @@ router.get(
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - file
  *             properties:
  *               file:
  *                 type: string
  *                 format: binary
- *               folderName:
- *                 type: string
- *               fileName:
- *                 type: string
- *               isConvertToWebp:
- *                 type: boolean
  *     responses:
  *       200:
  *         description: File uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     url:
+ *                       type: string
+ *                       example: http://localhost:5001/files/a3f9b2c1d4e5f6g7.pdf
+ *                     localUrl:
+ *                       type: string
+ *                       example: http://localhost:5001/files/a3f9b2c1d4e5f6g7.pdf
+ *                 message:
+ *                   type: string
+ *                   example: File uploaded successfully
  *       400:
  *         description: Bad request
  *       401:
  *         description: Unauthorized
  */
 router.post(
-  '/v1/content/files',
+  '/files',
   authMiddleware,
   upload.single('file'),
   uploadFile,
@@ -87,83 +74,28 @@ router.post(
 
 /**
  * @swagger
- * /v1/content/folders/{folderName}/files/{fileName}:
+ * /files/{fileName}:
  *   get:
  *     summary: Download or view a file
  *     tags: [Files]
  *     parameters:
  *       - in: path
- *         name: folderName
- *         required: true
- *         schema:
- *           type: string
- *       - in: path
  *         name: fileName
  *         required: true
  *         schema:
  *           type: string
- *       - in: query
- *         name: webp
- *         schema:
- *           type: boolean
- *         description: Convert to WebP format
+ *         description: File name (16-character hash + extension)
  *     responses:
  *       200:
  *         description: File content
  *       404:
  *         description: File not found
  */
-router.get('/v1/content/folders/:folderName/files/:fileName', fetchFile);
+router.get('/files/:fileName', fetchFile);
 
 /**
  * @swagger
- * /v1/content/folders/{folderName}/files/{fileName}:
- *   put:
- *     summary: Update/replace a file
- *     tags: [Files]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: folderName
- *         required: true
- *         schema:
- *           type: string
- *       - in: path
- *         name: fileName
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *     responses:
- *       200:
- *         description: File updated successfully
- *       400:
- *         description: Bad request
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: File not found
- */
-router.put(
-  '/v1/content/folders/:folderName/files/:fileName',
-  authMiddleware,
-  upload.single('file'),
-  updateFile,
-);
-
-/**
- * @swagger
- * /v1/content/folders/{folderName}/files/{fileName}:
+ * /files/{fileName}:
  *   delete:
  *     summary: Delete a file
  *     tags: [Files]
@@ -171,15 +103,11 @@ router.put(
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: folderName
- *         required: true
- *         schema:
- *           type: string
- *       - in: path
  *         name: fileName
  *         required: true
  *         schema:
  *           type: string
+ *         description: File name (16-character hash + extension)
  *     responses:
  *       200:
  *         description: File deleted successfully
@@ -189,10 +117,9 @@ router.put(
  *         description: File not found
  */
 router.delete(
-  '/v1/content/folders/:folderName/files/:fileName',
+  '/files/:fileName',
   authMiddleware,
   deleteFile,
 );
 
 export default router;
-

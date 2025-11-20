@@ -1,39 +1,18 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
-import { engine } from 'express-handlebars';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import swaggerUi from 'swagger-ui-express';
 import allRoutes from './routes/index.js';
-import uiRoutes from './routes/ui/index.js';
 import healthRoutes from './routes/health.js';
 import { swaggerSpec } from './config/swagger.js';
 import logger from './utils/logger.js';
 import envVariables from './utils/env.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 try {
   const app: Express = express();
 
   app.use(cors());
 
-  // Configure Handlebars
-  app.engine(
-    'hbs',
-    engine({
-      extname: '.hbs',
-      defaultLayout: 'main',
-      layoutsDir: join(__dirname, 'views', 'layouts'),
-      partialsDir: join(__dirname, 'views', 'partials'),
-    }),
-  );
-  app.set('view engine', 'hbs');
-  app.set('views', join(__dirname, 'views'));
-
-  // Serve static files
-  app.use(express.static('public'));
+  // Serve static files from attachment directory
   app.use(express.static(envVariables.ATTACHMENT_FOLDER_PATH || 'attachments'));
 
   const port = envVariables.PORT || 5001;
@@ -43,16 +22,13 @@ try {
   app.use(express.urlencoded({ extended: true }));
 
   // Health check (public)
-  app.use('/health', healthRoutes);
+  app.use(healthRoutes);
 
   // Swagger API documentation
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-  // UI Routes (must be before API routes to catch /folders)
-  app.use('/', uiRoutes);
-
-  // API Routes
-  app.use('/api', allRoutes);
+  // API Routes (files routes)
+  app.use(allRoutes);
 
   // Error handling middleware
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -83,4 +59,3 @@ try {
   logger.error('index.ts', error);
   process.exit(1);
 }
-

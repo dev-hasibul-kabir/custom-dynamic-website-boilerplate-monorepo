@@ -7,7 +7,7 @@ const swaggerDefinition: Options['definition'] = {
     title: 'File Storage API',
     version: '1.0.0',
     description:
-      'A modern file storage system with folder management, JWT authentication, and WebP image conversion',
+      'A simple file storage system with JWT authentication for upload and delete operations. Files are stored with random hash-based names for security.',
     contact: {
       name: 'API Support',
     },
@@ -52,20 +52,6 @@ const swaggerDefinition: Options['definition'] = {
           },
         },
       },
-      Folder: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-          },
-          path: {
-            type: 'string',
-          },
-          url: {
-            type: 'string',
-          },
-        },
-      },
       File: {
         type: 'object',
         properties: {
@@ -86,10 +72,6 @@ const swaggerDefinition: Options['definition'] = {
     {
       name: 'Health',
       description: 'Health check endpoints',
-    },
-    {
-      name: 'Folders',
-      description: 'Folder management operations',
     },
     {
       name: 'Files',
