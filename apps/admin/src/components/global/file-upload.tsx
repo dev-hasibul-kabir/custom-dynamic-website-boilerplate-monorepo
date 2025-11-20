@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { File as FileIcon, Image as ImageIcon, Upload, X } from 'lucide-react';
+import { AlertTriangle, File as FileIcon, Image as ImageIcon, Upload, X } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
 
 export interface FileItem {
@@ -52,20 +52,24 @@ const FileSelectField = ({
   const [selectedFiles, setSelectedFiles] = useState<FileItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadAbortControllers = useRef<Map<string, AbortController>>(new Map());
+  const initialUrlsRef = useRef<string[]>([]); // Track initial URLs from edit mode
 
   // Initialize from value prop
   React.useEffect(() => {
     if (!value) {
       setSelectedFiles([]);
+      initialUrlsRef.current = [];
       return;
     }
 
     const files: FileItem[] = [];
+    const initialUrls: string[] = [];
 
     // Handle array of URLs
     if (Array.isArray(value)) {
       value.forEach((item, index) => {
         if (typeof item === 'string' && item.startsWith('http')) {
+          initialUrls.push(item);
           files.push({
             id: `url-${index}-${Date.now()}`,
             file: null,
@@ -86,6 +90,7 @@ const FileSelectField = ({
       });
     } else if (typeof value === 'string' && value.startsWith('http')) {
       // Single URL
+      initialUrls.push(value);
       files.push({
         id: `url-${Date.now()}`,
         file: null,
@@ -104,6 +109,8 @@ const FileSelectField = ({
       });
     }
 
+    // Store initial URLs for edit mode tracking
+    initialUrlsRef.current = initialUrls;
     setSelectedFiles(files);
   }, [value]);
 
@@ -155,17 +162,19 @@ const FileSelectField = ({
       });
     });
 
-    setSelectedFiles(prev => {
-      const updated = multiple ? [...prev, ...newFiles] : newFiles;
-      // Get existing URLs from already uploaded files
-      const urlValues = updated.map(item => item.url).filter(Boolean);
-      // Only set URLs in form value (not File objects)
-      // User will need to click "Upload" button to upload pending files
+    // Calculate updated state first
+    const updated = multiple ? [...selectedFiles, ...newFiles] : newFiles;
+    const urlValues = updated.map(item => item.url).filter(Boolean);
+
+    // Update state
+    setSelectedFiles(updated);
+
+    // Update form values after state update (deferred to avoid render conflict)
+    setTimeout(() => {
       setFieldValue(name, multiple ? urlValues : urlValues[0] || null);
       setFieldTouched(name, true);
       setFieldError(name, '');
-      return updated;
-    });
+    }, 0);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -204,13 +213,17 @@ const FileSelectField = ({
         }
       }
 
-      setSelectedFiles(prev => {
-        const updated = prev.filter(item => item.id !== fileId);
-        // Only set URLs in form value, not File objects
-        const urlValues = updated.map(item => item.url).filter(Boolean);
+      // Calculate updated state first
+      const updated = selectedFiles.filter(item => item.id !== fileId);
+      const urlValues = updated.map(item => item.url).filter(Boolean);
+
+      // Update state
+      setSelectedFiles(updated);
+
+      // Update form values after state update (deferred to avoid render conflict)
+      setTimeout(() => {
         setFieldValue(name, multiple ? urlValues : urlValues[0] || null);
-        return updated;
-      });
+      }, 0);
     },
     [multiple, name, selectedFiles, setFieldValue],
   );
@@ -302,6 +315,13 @@ const FileSelectField = ({
 
   const hasPendingUploads = selectedFiles.some(item => item.file && item.status === 'pending');
   const isUploading = selectedFiles.some(item => item.status === 'uploading');
+
+  // Check if files were removed in edit mode without replacement
+  const currentUrls = selectedFiles.filter(item => item.url && !item.file).map(item => item.url!);
+  const hasRemovedFiles =
+    initialUrlsRef.current.length > 0 &&
+    currentUrls.length < initialUrlsRef.current.length &&
+    !hasPendingUploads;
 
   const formatFileSize = (bytes: number) => {
     return (bytes / 1024 / 1024).toFixed(2) + ' MB';
@@ -480,6 +500,25 @@ const FileSelectField = ({
         <p id={`${name}-help`} className="text-sm text-destructive">
           {errorMessage}
         </p>
+      )}
+      {hasRemovedFiles && (
+        <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                ⚠️ Warning: Files have been deleted from storage
+              </p>
+              <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                You have removed {initialUrlsRef.current.length - currentUrls.length} file(s) that
+                were previously uploaded. These files have already been deleted from the server. If
+                you close this form without uploading replacement files, the deletion will be
+                permanent and cannot be undone. Please upload new files to replace the removed ones
+                before closing the form.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
