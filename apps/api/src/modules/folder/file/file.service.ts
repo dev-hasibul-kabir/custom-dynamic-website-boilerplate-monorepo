@@ -1,9 +1,7 @@
 import { createErrorResult, createSuccessResult, ServiceResult } from '@/common/interfaces';
 import { DbService } from '@/db/db.service';
-import { Inject, Injectable, StreamableFile } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createReadStream, unlink } from 'fs';
-import { join } from 'path';
 import { FileDto, UpdateFileDto } from './dto';
 
 @Injectable()
@@ -61,14 +59,6 @@ export class FileService {
     });
 
     return createSuccessResult(data, 'File created successfully');
-  }
-
-  getFile(folderName: string, fileName: string) {
-    const file = createReadStream(
-      join(this.config.get('ATTACHMENT_DIRECTORY'), folderName, fileName),
-    );
-
-    return new StreamableFile(file);
   }
 
   async getAll(folderId: number): Promise<ServiceResult> {
@@ -194,19 +184,6 @@ export class FileService {
         'Folder not found',
       );
     }
-
-    const path = join(this.config.get('ATTACHMENT_DIRECTORY'), folder.slug, file.name);
-
-    // Delete file from filesystem (let errors bubble up)
-    await new Promise<void>((resolve, reject) => {
-      unlink(path, (error: NodeJS.ErrnoException | null) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
 
     // Delete from database (let errors bubble up)
     await this.db.file.delete({ where: { id } });

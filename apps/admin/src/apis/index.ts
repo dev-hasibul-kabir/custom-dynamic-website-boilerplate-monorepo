@@ -53,6 +53,10 @@ export const uploadFileToStorage = async ({
   fileName,
   onUploadProgress,
 }: UploadFileToStorageOptions): Promise<UploadFileResponse> => {
+  if (!storageBaseUrl) {
+    throw new Error('Storage base URL is not set');
+  }
+
   const formData = new FormData();
   formData.append('file', file);
 
@@ -89,4 +93,38 @@ export const uploadFileToStorage = async ({
   }
 
   throw new Error(response.data.message || 'File upload failed');
+};
+
+export const deleteFileFromStorage = async (fileUrl: string): Promise<void> => {
+  if (!fileUrl) {
+    throw new Error('File URL is required');
+  }
+
+  if (!storageBaseUrl) {
+    throw new Error('Storage base URL is not set');
+  }
+
+  const accessType = getCookie('accessType');
+  const accessToken = getCookie('accessToken');
+  const authHeader = accessType && accessToken ? `${accessType} ${accessToken}`.trim() : undefined;
+
+  const headers: Record<string, string> = {};
+  if (authHeader) {
+    headers['Authorization'] = authHeader;
+  }
+
+  const isAbsolute = /^https?:\/\//i.test(fileUrl);
+  const normalizedBase = storageBaseUrl.replace(/\/$/, '');
+  const normalizedPath = fileUrl.replace(/^\//, '');
+  const deleteUrl = isAbsolute ? fileUrl : `${normalizedBase}/${normalizedPath}`;
+
+  const response = await axios.delete<{
+    statusCode: number;
+    data: null;
+    message: string;
+  }>(deleteUrl, { headers });
+
+  if (response.data.statusCode !== 200) {
+    throw new Error(response.data.message || 'File deletion failed');
+  }
 };

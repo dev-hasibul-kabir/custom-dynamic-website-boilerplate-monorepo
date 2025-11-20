@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { FormikValues, useFormik } from 'formik';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import {
   ChipsField,
   FileSelectField,
@@ -13,7 +13,6 @@ import {
   TextareaField,
 } from '../index';
 import { ISelectOption } from './Dropdown';
-import type { FileSelectFieldRef } from './file-upload';
 import { IMultiSelectOption } from './multi-select';
 
 export interface IField {
@@ -73,10 +72,6 @@ export default function GenericFormGenerator({
 }) {
   // console.debug({ datum });
   // console.debug({ fields });
-
-  // Refs for file-select fields to trigger uploads
-  const fileSelectRefs = useRef<Map<string, FileSelectFieldRef>>(new Map());
-  const [isUploading, setIsUploading] = useState(false);
 
   const formik = useFormik({
     enableReinitialize,
@@ -156,36 +151,6 @@ export default function GenericFormGenerator({
       // console.debug({ values });
 
       setSubmitting(true);
-      setIsUploading(true);
-
-      // Upload files before form submission
-      const fileSelectFields = fields.filter(field => field.type === 'file-select');
-      const uploadPromises: Promise<string[]>[] = [];
-
-      for (const field of fileSelectFields) {
-        const ref = fileSelectRefs.current.get(field.name);
-        if (ref && ref.hasPendingUploads()) {
-          uploadPromises.push(ref.uploadFiles());
-        }
-      }
-
-      try {
-        // Wait for all uploads to complete
-        if (uploadPromises.length > 0) {
-          await Promise.all(uploadPromises);
-        }
-
-        // Update values after uploads complete
-        values = { ...formik.values };
-      } catch (error: any) {
-        console.error('File upload error:', error);
-        setSubmitting(false);
-        setIsUploading(false);
-        // Show error to user (you might want to use a toast here)
-        return;
-      }
-
-      setIsUploading(false);
 
       const hiddenFields: string[] = [];
 
@@ -532,13 +497,6 @@ export default function GenericFormGenerator({
       return (
         <FileSelectField
           key={field.name}
-          ref={(ref: FileSelectFieldRef | null) => {
-            if (ref) {
-              fileSelectRefs.current.set(field.name, ref);
-            } else {
-              fileSelectRefs.current.delete(field.name);
-            }
-          }}
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
@@ -546,19 +504,12 @@ export default function GenericFormGenerator({
           setFieldValue={formik.setFieldValue}
           setFieldTouched={formik.setFieldTouched}
           setFieldError={formik.setFieldError}
-          isDisabled={field.isDisabled || isUploading}
+          isDisabled={field.isDisabled}
           acceptType={field.acceptType}
           maxFileSize={field.maxFileSize}
           errorMessage={errorMessage}
           multiple={field.multiple ?? true}
           allowedExtensions={field.allowedExtensions}
-          onUploadComplete={(urls: string[]) => {
-            formik.setFieldValue(
-              field.name,
-              field.multiple !== false ? urls : urls[0] || null,
-              false,
-            );
-          }}
         />
       );
     }
@@ -644,9 +595,8 @@ export default function GenericFormGenerator({
       onClick={e => {
         formik.submitForm();
       }}
-      disabled={isUploading}
     >
-      {isUploading ? 'Uploading...' : !submitButtonText ? 'Submit' : submitButtonText}
+      {!submitButtonText ? 'Submit' : submitButtonText}
     </Button>
   );
 

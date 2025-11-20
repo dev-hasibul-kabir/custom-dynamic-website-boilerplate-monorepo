@@ -3,7 +3,6 @@ export interface EnvVariables {
   HOST?: string;
   PORT?: number;
   JWT_SECRET: string;
-  ATTACHMENT_DIRECTORY: string;
   ATTACHMENT_FOLDER_PATH: string;
   PUBLIC_URL: string;
   LOCAL_URL: string;

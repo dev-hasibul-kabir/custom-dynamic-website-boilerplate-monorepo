@@ -141,18 +141,6 @@ const Page = () => {
                     ],
                   },
                   {
-                    type: 'text',
-                    name: 'name',
-                    placeholder: 'Enter a name!',
-                    title: 'File Name',
-                    initialValue: null,
-                    validate: (values: any) => {
-                      if (!values.name) return 'Required!';
-
-                      return null;
-                    },
-                  },
-                  {
                     type: 'file-select',
                     name: 'url',
                     placeholder: 'Select a file or enter URL!',
@@ -163,6 +151,18 @@ const Page = () => {
                     multiple: false,
                     validate: (values: any) => {
                       if (!values.url) return 'Required!';
+
+                      return null;
+                    },
+                  },
+                  {
+                    type: 'text',
+                    name: 'name',
+                    placeholder: 'Enter a name!',
+                    title: 'File Name',
+                    initialValue: null,
+                    validate: (values: any) => {
+                      if (!values.name) return 'Required!';
 
                       return null;
                     },

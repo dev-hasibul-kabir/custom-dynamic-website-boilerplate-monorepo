@@ -41,7 +41,6 @@ const envVariables: EnvVariables = {
   HOST: env.HOST,
   PORT: env.PORT,
   JWT_SECRET: env.JWT_SECRET,
-  ATTACHMENT_DIRECTORY: env.ATTACHMENT_FOLDER_PATH,
   ATTACHMENT_FOLDER_PATH: env.ATTACHMENT_FOLDER_PATH,
   PUBLIC_URL: env.PUBLIC_URL || `http://${env.HOST || 'localhost'}:${env.PORT || 5001}`,
   LOCAL_URL: env.LOCAL_URL || `http://localhost:${env.PORT || 5001}`,
