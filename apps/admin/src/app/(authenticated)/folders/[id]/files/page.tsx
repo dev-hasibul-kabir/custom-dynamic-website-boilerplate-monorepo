@@ -77,6 +77,14 @@ const Page = () => {
                 addNew={{
                   uri: `/api/v1/files`,
                 }}
+                viewOne={{
+                  uri: `/api/v1/files/{id}`,
+                  identifier: '{id}',
+                }}
+                editExisting={{
+                  uri: `/api/v1/files/{id}`,
+                  identifier: '{id}',
+                }}
                 removeOne={{
                   uri: '/api/v1/files/{id}',
                   identifier: '{id}',

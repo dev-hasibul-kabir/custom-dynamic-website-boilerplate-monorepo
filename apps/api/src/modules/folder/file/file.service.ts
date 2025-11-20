@@ -4,7 +4,7 @@ import { Inject, Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createReadStream, unlink } from 'fs';
 import { join } from 'path';
-import { FileDto } from './dto';
+import { FileDto, UpdateFileDto } from './dto';
 
 @Injectable()
 export class FileService {
@@ -89,47 +89,85 @@ export class FileService {
     return createSuccessResult(data, 'Files retrieved successfully');
   }
 
-  // async getById(id: number) {
-  // 	try {
-  // 		const data = await super.transact(async (tx: Prisma.TransactionClient) => {
-  // 			return await super.readFirst(tx, { id });
-  // 		});
+  async getById(id: number): Promise<ServiceResult> {
+    // Business logic validation
+    if (!id || id <= 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Invalid file ID' },
+        'Invalid file ID provided',
+      );
+    }
 
-  // 		return {
-  // 			success: true,
-  // 			data,
-  // 		};
-  // 	} catch (error) {
-  // 		return {
-  // 			success: false,
-  // 			error,
-  // 		};
-  // 	}
-  // }
+    // Single operation - use Prisma directly
+    const data = await this.db.file.findFirst({
+      where: { id },
+      include: { folder: true },
+    });
 
-  // async editById(id: number, dto: UpdateFileDto) {
-  // 	try {
-  // 		const data = await super.transact(async (tx: Prisma.TransactionClient) => {
-  // 			return await super.update(
-  // 				tx,
-  // 				{ id },
-  // 				{
-  // 					...dto,
-  // 				}
-  // 			);
-  // 		});
+    // Business logic: check if file exists
+    if (!data) {
+      return createErrorResult({ name: 'badRequest', message: 'File not found' }, 'File not found');
+    }
 
-  // 		return {
-  // 			success: true,
-  // 			data,
-  // 		};
-  // 	} catch (error) {
-  // 		return {
-  // 			success: false,
-  // 			error,
-  // 		};
-  // 	}
-  // }
+    return createSuccessResult(data, 'File retrieved successfully');
+  }
+
+  async editById(id: number, dto: UpdateFileDto): Promise<ServiceResult> {
+    // Business logic validation
+    if (!id || id <= 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Invalid file ID' },
+        'Invalid file ID provided',
+      );
+    }
+
+    if (!dto || Object.keys(dto).length === 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'No update data provided' },
+        'At least one field is required to update the file',
+      );
+    }
+
+    if (dto.folderId !== undefined && dto.folderId <= 0) {
+      return createErrorResult(
+        { name: 'badRequest', message: 'Invalid folder ID' },
+        'Invalid folder ID provided',
+      );
+    }
+
+    const existingFile = await this.db.file.findFirst({
+      where: { id },
+      include: { folder: true },
+    });
+
+    // Business logic: check if file exists
+    if (!existingFile) {
+      return createErrorResult({ name: 'badRequest', message: 'File not found' }, 'File not found');
+    }
+
+    if (dto.folderId !== undefined) {
+      const folder = await this.db.folder.findUnique({
+        where: { id: dto.folderId },
+      });
+
+      if (!folder) {
+        return createErrorResult(
+          { name: 'badRequest', message: 'Folder not found' },
+          'Folder not found',
+        );
+      }
+    }
+
+    const data = await this.db.file.update({
+      where: { id },
+      data: {
+        ...dto,
+      },
+      include: { folder: true },
+    });
+
+    return createSuccessResult(data, 'File updated successfully');
+  }
 
   async removeById(id: number): Promise<ServiceResult> {
     // Business logic validation

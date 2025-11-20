@@ -1,6 +1,7 @@
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
+import { PartialType } from '@nestjs/mapped-types';
 import { FileType, GeneralStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class FileDto {
   @Type(() => Number)
@@ -25,3 +26,5 @@ export class FileDto {
   @IsNotEmpty()
   status: GeneralStatus;
 }
+
+export class UpdateFileDto extends PartialType(FileDto) {}

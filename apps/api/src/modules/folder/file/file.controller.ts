@@ -1,19 +1,20 @@
-import {
-  UseGuards,
-  Controller,
-  Body,
-  Post,
-  HttpCode,
-  HttpStatus,
-  Get,
-  Param,
-  Delete,
-  Inject,
-} from '@nestjs/common';
-import { FileService } from './file.service';
 import { CheckAbility } from '@/common/decorators';
 import { PermissionGuard } from '@/common/guards';
-import { FileDto } from './dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { FileDto, UpdateFileDto } from './dto';
+import { FileService } from './file.service';
 
 export const fileSubject = 'file';
 
@@ -44,21 +45,21 @@ export class FileController {
     return await this.fileService.getAll(parseInt(folderId));
   }
 
-  // @CheckAbility({ subject: fileSubject, action: 'read' })
-  // @UseGuards(PermissionGuard)
-  // @HttpCode(HttpStatus.OK)
-  // @Get('api/v1/files/:id')
-  // async readById(@Param('id') id: string) {
-  // 	return await this.fileService.getById(parseInt(id));
-  // }
+  @CheckAbility({ subject: fileSubject, action: 'read' })
+  @UseGuards(PermissionGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('api/v1/files/:id')
+  async readById(@Param('id') id: string) {
+    return await this.fileService.getById(parseInt(id, 10));
+  }
 
-  // @CheckAbility({ subject: fileSubject, action: 'update' })
-  // @UseGuards(PermissionGuard)
-  // @HttpCode(HttpStatus.OK)
-  // @Put('api/v1/files/:id')
-  // async updateById(@Param('id') id, @Body() dto: UpdateFileDto) {
-  // 	return await this.fileService.editById(parseInt(id), dto);
-  // }
+  @CheckAbility({ subject: fileSubject, action: 'update' })
+  @UseGuards(PermissionGuard)
+  @HttpCode(HttpStatus.OK)
+  @Put('api/v1/files/:id')
+  async updateById(@Param('id') id: string, @Body() dto: UpdateFileDto) {
+    return await this.fileService.editById(parseInt(id, 10), dto);
+  }
 
   @CheckAbility({ subject: fileSubject, action: 'delete' })
   @UseGuards(PermissionGuard)
