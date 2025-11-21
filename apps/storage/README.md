@@ -21,12 +21,14 @@ A modern file storage system built with Express.js, featuring folder-based organ
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd node-express-dynamic-storage
 ```
 
 2. Install dependencies:
+
 ```bash
 yarn install
 # or
@@ -34,6 +36,7 @@ npm install
 ```
 
 3. Create a `.env` file in the root directory:
+
 ```env
 NODE_ENV=development
 HOST=localhost
@@ -46,6 +49,7 @@ LOG_DIR_PATH=./logs
 ```
 
 4. Create necessary directories:
+
 ```bash
 mkdir -p attachments logs
 ```
@@ -53,6 +57,7 @@ mkdir -p attachments logs
 ## Running the Application
 
 ### Development Mode
+
 ```bash
 yarn start:dev
 # or
@@ -62,6 +67,7 @@ npm run start:dev
 The server will start on `http://localhost:5001` (or the port specified in `.env`).
 
 ### Production Mode
+
 ```bash
 yarn start:prod
 # or
@@ -142,6 +148,7 @@ All environment variables are validated on startup using Zod. Required variables
 ## Authentication
 
 The API uses JWT authentication. Tokens must include:
+
 - `iss`: Issuer (must be 'tripociate.com')
 - `sub`: Subject (email address)
 - `email`: Email address (must match `sub`)
@@ -151,6 +158,7 @@ See [API Documentation](./docs/API.md) for details on authentication.
 ## WebP Conversion
 
 Images can be converted to WebP format with configurable options:
+
 - Quality (0-100)
 - Width (pixels)
 - Height (pixels)
@@ -161,11 +169,13 @@ See [WebP Documentation](./docs/WEBP.md) for details.
 ## Development
 
 ### Code Formatting
+
 ```bash
 yarn format
 ```
 
 ### Running Tests
+
 ```bash
 yarn test
 ```
@@ -177,4 +187,3 @@ ISC
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-

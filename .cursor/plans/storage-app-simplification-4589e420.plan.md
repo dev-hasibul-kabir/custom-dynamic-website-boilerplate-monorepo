@@ -1,4 +1,5 @@
 <!-- 4589e420-3688-4470-8215-48d35cca3dc1 ad0cc39e-a680-4db0-877f-c58f4f3a07e7 -->
+
 # Storage App Simplification Plan
 
 ## Overview
@@ -206,8 +207,8 @@ Transform the storage app from a folder-based file management system to a simple
 Use crypto to generate 16-character random string:
 
 ```typescript
-import crypto from 'node:crypto';
-const randomName = crypto.randomBytes(8).toString('hex'); // 16 chars
+import crypto from "node:crypto";
+const randomName = crypto.randomBytes(8).toString("hex"); // 16 chars
 const fileName = `${randomName}${fileExtension}`;
 ```
 

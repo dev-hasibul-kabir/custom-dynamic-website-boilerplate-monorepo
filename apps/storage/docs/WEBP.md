@@ -68,21 +68,25 @@ GET /api/v1/content/folders/:folderName/files/:fileName?webp=true&quality=90&wid
 #### Example Requests
 
 **Basic conversion:**
+
 ```
 GET /api/v1/content/folders/photos/files/image.jpg?webp=true
 ```
 
 **With quality:**
+
 ```
 GET /api/v1/content/folders/photos/files/image.jpg?webp=true&quality=95
 ```
 
 **With dimensions:**
+
 ```
 GET /api/v1/content/folders/photos/files/image.jpg?webp=true&width=800&height=600
 ```
 
 **Full options:**
+
 ```
 GET /api/v1/content/folders/photos/files/image.jpg?webp=true&quality=90&width=1920&height=1080&fit=cover
 ```
@@ -96,6 +100,7 @@ Converted WebP files are cached. The first request converts the image and saves 
 ## Fit Modes Explained
 
 ### `inside` (Default)
+
 Resizes the image to fit completely within the specified dimensions while maintaining aspect ratio.
 
 **Use case:** Thumbnails, previews where you want the entire image visible.
@@ -107,6 +112,7 @@ Result: 800x600px (fits completely)
 ```
 
 ### `cover`
+
 Resizes the image to cover the entire area, maintaining aspect ratio. May crop parts of the image.
 
 **Use case:** Hero images, banners where you want the area filled.
@@ -118,16 +124,19 @@ Result: 800x600px (covers area, may crop)
 ```
 
 ### `contain`
+
 Similar to `inside`, but ensures the image fits entirely within dimensions.
 
 **Use case:** When you need precise dimension control.
 
 ### `fill`
+
 Resizes to exact dimensions, may distort the image.
 
 **Use case:** When exact dimensions are required regardless of aspect ratio.
 
 ### `outside`
+
 Resizes to fill dimensions, may exceed them while maintaining aspect ratio.
 
 **Use case:** When you want at least the specified dimensions.
@@ -155,6 +164,7 @@ Recommended quality settings:
 ## Browser Support
 
 WebP is supported in:
+
 - Chrome 23+
 - Firefox 65+
 - Edge 18+
@@ -171,15 +181,17 @@ For older browsers, serve the original JPEG/PNG format.
 
 ```html
 <picture>
-  <source srcset="/api/v1/content/folders/photos/files/image.jpg?webp=true" type="image/webp">
-  <img src="/api/v1/content/folders/photos/files/image.jpg" alt="Photo">
+  <source srcset="/api/v1/content/folders/photos/files/image.jpg?webp=true" type="image/webp" />
+  <img src="/api/v1/content/folders/photos/files/image.jpg" alt="Photo" />
 </picture>
 ```
 
 ### JavaScript Fetch
 
 ```javascript
-const response = await fetch('/api/v1/content/folders/photos/files/image.jpg?webp=true&quality=90&width=800');
+const response = await fetch(
+  '/api/v1/content/folders/photos/files/image.jpg?webp=true&quality=90&width=800',
+);
 const blob = await response.blob();
 const imageUrl = URL.createObjectURL(blob);
 ```
@@ -193,9 +205,8 @@ const response = await axios.get('/api/v1/content/folders/photos/files/image.jpg
     quality: 90,
     width: 1920,
     height: 1080,
-    fit: 'cover'
+    fit: 'cover',
   },
-  responseType: 'blob'
+  responseType: 'blob',
 });
 ```
-

@@ -7,15 +7,19 @@ import envVariables from '../utils/env.js';
 import logger from '../utils/logger.js';
 import { success, error } from '../utils/response.js';
 
-const { validateFile, getFileExtension, checkFileExists, saveFile, getFile, deleteFile: deleteFileUtil } = fileUtil;
+const {
+  validateFile,
+  getFileExtension,
+  checkFileExists,
+  saveFile,
+  getFile,
+  deleteFile: deleteFileUtil,
+} = fileUtil;
 
 const tag = 'services/file.ts';
 
 // Upload file
-export const uploadFile = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const uploadFile = async (req: Request, res: Response): Promise<void> => {
   try {
     const file = req.file;
 
@@ -55,10 +59,7 @@ export const uploadFile = async (
 };
 
 // Get file
-export const fetchFile = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const fetchFile = async (req: Request, res: Response): Promise<void> => {
   try {
     const { fileName } = req.params as {
       fileName: string;
@@ -84,10 +85,7 @@ export const fetchFile = async (
 };
 
 // Delete file
-export const deleteFile = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const deleteFile = async (req: Request, res: Response): Promise<void> => {
   try {
     const { fileName } = req.params as {
       fileName: string;

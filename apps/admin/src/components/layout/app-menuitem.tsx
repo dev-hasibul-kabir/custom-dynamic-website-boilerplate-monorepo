@@ -39,7 +39,9 @@ const AppMenuitem = ({ item, index, root = false, parentKey }: AppMenuitemProps)
 
   // Get icon component from lucide-react
   const IconComponent = item.icon
-    ? (LucideIcons[item.icon as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }>)
+    ? (LucideIcons[item.icon as keyof typeof LucideIcons] as React.ComponentType<{
+        className?: string;
+      }>)
     : null;
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -51,12 +53,8 @@ const AppMenuitem = ({ item, index, root = false, parentKey }: AppMenuitemProps)
 
   return (
     <li className={cn({ 'active-menuitem': active })}>
-      {(!item.to || item.items) ? (
-        <a
-          href="#"
-          onClick={handleToggle}
-          className={cn({ 'active-route': isParentActive })}
-        >
+      {!item.to || item.items ? (
+        <a href="#" onClick={handleToggle} className={cn({ 'active-route': isParentActive })}>
           {IconComponent ? (
             <IconComponent className="layout-menuitem-icon h-4 w-4" />
           ) : (
@@ -68,10 +66,7 @@ const AppMenuitem = ({ item, index, root = false, parentKey }: AppMenuitemProps)
       ) : null}
 
       {item.to && !item.items ? (
-        <Link
-          href={item.to}
-          className={cn({ 'active-route': isActive })}
-        >
+        <Link href={item.to} className={cn({ 'active-route': isActive })}>
           {IconComponent ? (
             <IconComponent className="layout-menuitem-icon h-4 w-4" />
           ) : (
@@ -93,4 +88,3 @@ const AppMenuitem = ({ item, index, root = false, parentKey }: AppMenuitemProps)
 };
 
 export default AppMenuitem;
-

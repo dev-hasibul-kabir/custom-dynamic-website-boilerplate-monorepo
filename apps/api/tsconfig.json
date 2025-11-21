@@ -1,15 +1,15 @@
 {
-	"extends": "@repo/typescript-config/nestjs.json",
-	"compilerOptions": {
-		"baseUrl": "./",
-		"paths": {
-			"@/*": ["src/*"],
-			"@/common/*": ["src/common/*"],
-			"@/modules/*": ["src/modules/*"],
-			"@/util/*": ["src/util/*"],
-			"@/db/*": ["src/db/*"]
-		}
-	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist", "test"]
+  "extends": "@repo/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/common/*": ["src/common/*"],
+      "@/modules/*": ["src/modules/*"],
+      "@/util/*": ["src/util/*"],
+      "@/db/*": ["src/db/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test"]
 }

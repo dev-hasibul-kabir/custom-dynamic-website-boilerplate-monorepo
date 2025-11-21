@@ -63,8 +63,12 @@ export default function LoginPageClient() {
         <div className="rounded-2xl sm:rounded-[56px] bg-gradient-to-b from-primary/10 to-transparent p-1">
           <Card className="rounded-xl sm:rounded-[53px]">
             <CardHeader className="text-center px-4 pt-6 sm:px-6 sm:pt-8">
-              <CardTitle className="text-2xl sm:text-3xl mb-2 sm:mb-3">Welcome, Example Admin!</CardTitle>
-              <CardDescription className="text-sm sm:text-base">Sign in to continue</CardDescription>
+              <CardTitle className="text-2xl sm:text-3xl mb-2 sm:mb-3">
+                Welcome, Example Admin!
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                Sign in to continue
+              </CardDescription>
             </CardHeader>
             <CardContent className="px-4 pb-6 sm:px-6 sm:pb-8">
               <form onSubmit={formik.handleSubmit} className="space-y-4">
@@ -133,4 +137,3 @@ export default function LoginPageClient() {
     </div>
   );
 }
-

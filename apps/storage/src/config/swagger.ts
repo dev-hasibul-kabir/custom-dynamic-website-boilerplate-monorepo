@@ -86,4 +86,3 @@ const options: Options = {
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
-

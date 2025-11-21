@@ -1,10 +1,6 @@
 import express, { Router } from 'express';
 import multer from 'multer';
-import {
-  uploadFile,
-  fetchFile,
-  deleteFile,
-} from '../../services/file.js';
+import { uploadFile, fetchFile, deleteFile } from '../../services/file.js';
 import { authMiddleware } from '../../middlewares/auth.js';
 
 const router: Router = express.Router();
@@ -65,12 +61,7 @@ const upload = multer({
  *       401:
  *         description: Unauthorized
  */
-router.post(
-  '/files',
-  authMiddleware,
-  upload.single('file'),
-  uploadFile,
-);
+router.post('/files', authMiddleware, upload.single('file'), uploadFile);
 
 /**
  * @swagger
@@ -116,10 +107,6 @@ router.get('/files/:fileName', fetchFile);
  *       404:
  *         description: File not found
  */
-router.delete(
-  '/files/:fileName',
-  authMiddleware,
-  deleteFile,
-);
+router.delete('/files/:fileName', authMiddleware, deleteFile);
 
 export default router;

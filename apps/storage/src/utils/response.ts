@@ -68,10 +68,7 @@ export const error = (object: ErrorObject | Error): ErrorResponse => {
   return errorMapper(object);
 };
 
-export const success = <T = unknown>(
-  data: T,
-  message?: string,
-): SuccessResponse<T> => {
+export const success = <T = unknown>(data: T, message?: string): SuccessResponse<T> => {
   return {
     statusCode: 200,
     data,

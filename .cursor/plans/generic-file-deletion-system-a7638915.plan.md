@@ -1,4 +1,5 @@
 <!-- a7638915-5cb3-4024-8fae-df54608a262f b3b5904b-031b-4eb3-9866-e530b872f187 -->
+
 # Generic File Deletion System
 
 ## Problem Statement
@@ -12,7 +13,6 @@
 ### Backend Changes
 
 1. **Create Generic File Deletion Utility Service**
-
    - Location: `apps/api/src/common/services/file-deletion.service.ts`
    - Extract file URLs from any database row (handles single strings, arrays, multiple columns)
    - Extract filename from storage URL (format: `http://base/files/filename.ext`)
@@ -20,20 +20,17 @@
    - Handle errors gracefully (log but don't fail delete operation)
 
 2. **Update File Service**
-
    - Location: `apps/api/src/modules/folder/file/file.service.ts`
    - In `removeById()`: Before deleting DB row, extract file URL and delete from storage
    - Use the generic file deletion service
 
 3. **Create Reusable Pattern for Other Services**
-
    - Document pattern for future services to use file deletion utility
    - Pattern: Before DB delete, call `fileDeletionService.deleteFilesFromRow(row)`
 
 ### Frontend Changes
 
 1. **Update File Upload Component**
-
    - Location: `apps/admin/src/components/global/file-upload.tsx`
    - **Single File Mode** (`multiple=false`):
      - Track `oldFileUrl` when editing (from initial value)
@@ -87,7 +84,7 @@ deleteFilesFromRow(row: any, fileUrlColumns?: string[]): Promise<void>
 ## Testing Considerations
 
 1. Test single file deletion on row delete
-2. Test multiple file deletion on row delete  
+2. Test multiple file deletion on row delete
 3. Test edit mode: remove file then cancel form (file should not be deleted)
 4. Test edit mode: remove file then save (file should be deleted)
 5. Test single file: upload new file (old file should be deleted)

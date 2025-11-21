@@ -9,4 +9,3 @@ export const constants = {
 export type Environment = (typeof constants)[keyof typeof constants];
 
 export default constants;
-

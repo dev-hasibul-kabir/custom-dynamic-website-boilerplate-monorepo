@@ -21,11 +21,13 @@ Authorization: Bearer <your-jwt-token>
 ### JWT Token Requirements
 
 Your JWT token must contain the following claims:
+
 - `iss`: Must be `"tripociate.com"`
 - `sub`: Must be an email address
 - `email`: Must match `sub`
 
 Example token payload:
+
 ```json
 {
   "iss": "tripociate.com",
@@ -47,6 +49,7 @@ Get a list of all folders.
 **Authentication:** Required
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -72,9 +75,11 @@ Get details about a specific folder including file list.
 **Authentication:** Required
 
 **Parameters:**
+
 - `folderName` (path): Name of the folder
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -104,6 +109,7 @@ Create a new folder.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "folderName": "my-new-folder"
@@ -111,6 +117,7 @@ Create a new folder.
 ```
 
 **Response:**
+
 ```json
 {
   "statusCode": 201,
@@ -134,9 +141,11 @@ Rename an existing folder.
 **Authentication:** Required
 
 **Parameters:**
+
 - `folderName` (path): Current name of the folder
 
 **Request Body:**
+
 ```json
 {
   "folderName": "new-folder-name"
@@ -144,6 +153,7 @@ Rename an existing folder.
 ```
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -167,11 +177,13 @@ Delete an empty folder.
 **Authentication:** Required
 
 **Parameters:**
+
 - `folderName` (path): Name of the folder to delete
 
 **Note:** Folder must be empty to be deleted.
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -195,6 +207,7 @@ Upload a file to a folder.
 **Request:** `multipart/form-data`
 
 **Form Fields:**
+
 - `file` (required): The file to upload
 - `folderName` (optional): Target folder name (defaults to 'root')
 - `fileName` (optional): Custom file name (uses original name if not provided)
@@ -206,6 +219,7 @@ Upload a file to a folder.
 - `fit` (optional): WebP fit mode (inside|cover|contain|fill|outside, default: inside)
 
 **Example using cURL:**
+
 ```bash
 curl -X POST http://localhost:5001/api/v1/content/files \
   -H "Authorization: Bearer <token>" \
@@ -216,6 +230,7 @@ curl -X POST http://localhost:5001/api/v1/content/files \
 ```
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -238,9 +253,11 @@ Get a list of all files in a folder.
 **Authentication:** Required
 
 **Parameters:**
+
 - `folderName` (path): Name of the folder
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -266,10 +283,12 @@ Download or view a file.
 **Authentication:** Not required (public endpoint)
 
 **Parameters:**
+
 - `folderName` (path): Name of the folder
 - `fileName` (path): Name of the file
 
 **Query Parameters (for WebP conversion):**
+
 - `webp` (optional): Set to `true` to convert image to WebP
 - `quality` (optional): WebP quality (0-100, default: 80)
 - `width` (optional): WebP width in pixels
@@ -279,11 +298,13 @@ Download or view a file.
 **Examples:**
 
 Get original file:
+
 ```
 GET /api/v1/content/folders/photos/files/image.jpg
 ```
 
 Get WebP version:
+
 ```
 GET /api/v1/content/folders/photos/files/image.jpg?webp=true&quality=90&width=800
 ```
@@ -301,12 +322,14 @@ Replace an existing file with a new one.
 **Authentication:** Required
 
 **Parameters:**
+
 - `folderName` (path): Current folder name
 - `fileName` (path): Current file name
 
 **Request:** `multipart/form-data`
 
 **Form Fields:**
+
 - `file` (required): The new file
 - `folderName` (optional): New folder name
 - `fileName` (optional): New file name
@@ -315,6 +338,7 @@ Replace an existing file with a new one.
 - `quality`, `width`, `height`, `fit` (optional): WebP options
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -337,10 +361,12 @@ Delete a file from a folder.
 **Authentication:** Required
 
 **Parameters:**
+
 - `folderName` (path): Name of the folder
 - `fileName` (path): Name of the file to delete
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -375,9 +401,9 @@ All error responses follow this format:
 ## Allowed File Extensions
 
 Default allowed extensions:
+
 - Images: `jpeg`, `jpg`, `png`, `webp`, `gif`
 - Videos: `mp4`, `webm`
 - Documents: `pdf`, `docx`, `doc`
 
 You can specify custom allowed extensions in file upload requests.
-

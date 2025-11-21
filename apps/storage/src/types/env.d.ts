@@ -8,4 +8,3 @@ export interface EnvVariables {
   LOCAL_URL: string;
   LOG_DIR_PATH: string;
 }
-
