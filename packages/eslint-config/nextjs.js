@@ -1,27 +1,21 @@
-const base = require('./base');
+import nextConfig from "eslint-config-next";
+import baseConfig from "./eslint.config.js";
 
-module.exports = {
-  ...base,
-  env: {
-    ...base.env,
-    browser: true,
-  },
-  extends: [
-    ...base.extends,
-    'next/core-web-vitals',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-  ],
-  plugins: [...base.plugins, 'react', 'react-hooks'],
-  rules: {
-    ...base.rules,
-    'react/react-in-jsx-scope': 'off',
-    'react/prop-types': 'off',
-  },
-  settings: {
-    react: {
-      version: 'detect',
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+  ...baseConfig,
+  ...nextConfig,
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    languageOptions: {
+      globals: {
+        React: "readonly",
+        JSX: "readonly",
+      },
+    },
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
     },
   },
-};
-
+];

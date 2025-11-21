@@ -1,12 +1,16 @@
-const base = require('./base');
+import baseConfig from "./eslint.config.js";
 
-module.exports = {
-  ...base,
-  // Note: parserOptions.project should be set by consuming apps
-  // with tsconfigRootDir to properly resolve the tsconfig.json path
-  extends: [
-    ...base.extends,
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-  ],
-};
-
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+  ...baseConfig,
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      // Note: parserOptions.project should be set by consuming apps
+      // with tsconfigRootDir to properly resolve the tsconfig.json path
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": "error",
+      "@typescript-eslint/await-thenable": "error",
+    },
+  },
+];

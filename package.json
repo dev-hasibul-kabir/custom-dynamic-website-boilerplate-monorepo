@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "prepare": "husky",
     "db:migrate:dev": "pnpm --filter @repo/api db:migrate:dev",
     "db:migrate:prod": "pnpm --filter @repo/api db:migrate:prod",
     "db:seed": "pnpm --filter @repo/api db:seed",
@@ -20,6 +21,7 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "type-check": "turbo run type-check",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "turbo run clean && rm -rf node_modules",
@@ -29,13 +31,31 @@
     "clean:web": "pnpm --filter @repo/web clean"
   },
   "devDependencies": {
+    "husky": "^9.0.0",
     "prettier": "^3.3.3",
     "turbo": "^2.0.0",
     "typescript": "^5.5.4"
   },
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=24.11.1",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@8.15.0"
+  "packageManager": "pnpm@8.15.0",
+  "pnpm": {
+    "overrides": {
+      "hono": ">=4.10.2",
+      "glob": ">=10.5.0",
+      "js-yaml": ">=4.1.1",
+      "cookie": ">=0.7.0"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@prisma/client"
+      ],
+      "allowedVersions": {
+        "@prisma/client": "7",
+        "react": "18"
+      }
+    }
+  }
 }

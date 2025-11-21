@@ -1,14 +1,4 @@
-const base = require('./base');
+import baseConfig from "./eslint.config.js";
 
-module.exports = {
-  ...base,
-  parserOptions: {
-    ...base.parserOptions,
-    project: './tsconfig.json',
-  },
-  extends: [
-    ...base.extends,
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-  ],
-};
-
+/** @type {import('eslint').Linter.Config[]} */
+export default baseConfig;
