@@ -1,8 +1,8 @@
-import { Inject } from '@nestjs/common';
 import { Process, Processor } from '@nestjs/bull';
-import { Job } from 'bull';
-import { IMailerPayload, MailerService } from './mailer.service';
+import { Inject } from '@nestjs/common';
+import bull from 'bull';
 import * as _ from 'lodash';
+import { IMailerPayload, MailerService } from './mailer.service';
 
 @Processor('notification-queue')
 export class NotificationProcessor {
@@ -10,7 +10,7 @@ export class NotificationProcessor {
   private readonly mailer: MailerService;
 
   @Process('mail-send')
-  async sendMail(job: Job<IMailerPayload>) {
+  async sendMail(job: bull.Job<IMailerPayload>) {
     console.debug('processor: notification-queue -> process: mail-send -> starts', {
       ..._.pick(job, ['opts', 'name', 'data', 'id']),
     });

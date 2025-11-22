@@ -1,8 +1,8 @@
 import { createErrorResult, createSuccessResult, ServiceResult } from '@/common/interfaces';
-import { Injectable, Inject } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { DbService } from '@/db/db.service';
-import { CreateRoleDto, UpdateRoleDto } from './dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { CreateRoleDto, UpdateRoleDto } from './dto/index';
 
 type RoleWithRelations = Prisma.RoleGetPayload<{
   include: {

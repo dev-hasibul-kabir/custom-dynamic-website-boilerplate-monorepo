@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DbService } from '@/db/db.service';
-import { CreateFolderDto, UpdateFolderDto } from './dto';
+import { CreateFolderDto, UpdateFolderDto } from './dto/index';
 import slugify from 'slugify';
 import { createSuccessResult, createErrorResult, ServiceResult } from '@/common/interfaces';
 

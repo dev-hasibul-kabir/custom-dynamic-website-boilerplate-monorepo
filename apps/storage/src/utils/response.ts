@@ -9,11 +9,6 @@ interface ErrorObject {
   };
 }
 
-interface ExpressError extends Error {
-  statusCode: number;
-  isOperational?: boolean;
-}
-
 const errorMapper = (object: ErrorObject): ErrorResponse => {
   let message = '';
   const { name } = object;

@@ -1,8 +1,9 @@
 'use client';
 
 import { getProfile } from '@/apis';
-import { getUserManagementFields } from '@/app/(authenticated)/users/page';
+import { getUserManagementFields } from '@/utils/userFields';
 import { BreadCrumb, GenericFormGenerator } from '@/components';
+import { IField } from '@/components/global/GenericFormGenerator';
 import { Card, CardContent } from '@/components/ui/card';
 import { getAccessToken, getAccessType, getUser } from '@/libs/auth';
 import { useAuth } from '@/hooks/use-auth';
@@ -65,8 +66,8 @@ const ProfilePage = () => {
           <GenericFormGenerator
             datum={user}
             fields={getUserManagementFields([{ id: user.roleId, name: user.role.name }])
-              .filter(field => field.name !== 'password')
-              .map(field => ({ ...field, isDisabled: true }))}
+              .filter((field: IField) => field.name !== 'password')
+              .map((field: IField) => ({ ...field, isDisabled: true }))}
             callback={values => {
               // console.debug({ values });
             }}

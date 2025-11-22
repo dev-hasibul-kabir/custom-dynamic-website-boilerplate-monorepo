@@ -260,7 +260,6 @@ export default function GenericFormGenerator({
     // });
 
     const errorMessage: string =
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       !formik.touched[field.name] && !formik.errors[field.name] ? '' : formik.errors[field.name];
 
@@ -279,7 +278,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           onChange={formik.handleChange}
@@ -296,7 +294,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           onChange={formik.handleChange}
@@ -313,7 +310,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           setFieldValue={formik.setFieldValue}
@@ -336,7 +332,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           setFieldValue={formik.setFieldValue}
@@ -361,7 +356,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           setFieldValue={formik.setFieldValue}
@@ -387,7 +381,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           onChange={formik.handleChange}
@@ -405,7 +398,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           options={field.options ?? []}
@@ -429,7 +421,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           options={field.options ?? []}
@@ -437,7 +428,6 @@ export default function GenericFormGenerator({
           isSearchable={field.isSearchable}
           isClearable={field.isClearable}
           isDisabled={field.isDisabled}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           parentValue={formik.values[field.parentFieldName]}
           setFieldValue={(name: string, value: any) => {
@@ -456,7 +446,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           options={field.options ?? []}
@@ -474,7 +463,6 @@ export default function GenericFormGenerator({
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           value={formik.values[field.name] ?? ''}
           setFieldValue={formik.setFieldValue}

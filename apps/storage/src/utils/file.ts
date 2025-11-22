@@ -5,11 +5,12 @@ import logger from './logger.js';
 
 interface MulterFile {
   originalname: string;
-  buffer: Buffer;
+  buffer: globalThis.Buffer;
   mimetype?: string;
   size?: number;
 }
 
+/* eslint-disable no-unused-vars */
 interface FileUtil {
   validateFile: (file: MulterFile | null | undefined) => void;
   getFileExtension: (fileName: string) => string;
@@ -18,6 +19,7 @@ interface FileUtil {
   checkFileExists: (fileName: string) => boolean;
   deleteFile: (fileNameWithExtension: string) => Promise<boolean>;
 }
+/* eslint-enable no-unused-vars */
 
 export const fileUtil: FileUtil = {
   validateFile(file: MulterFile | null | undefined): void {

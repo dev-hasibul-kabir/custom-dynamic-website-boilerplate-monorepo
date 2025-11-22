@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Gender, Prisma, UserStatus } from '@prisma/client';
-import { SignInUserDto, UserCreateDto, UserUpdateDto } from './dto';
+import { SignInUserDto, UserCreateDto, UserUpdateDto } from './dto/index';
 
 type UserWithRelations = Prisma.UserGetPayload<{
   include: {

@@ -31,8 +31,9 @@ const UrlBasedColumnItem = ({ url }: { url: string }) => {
       } else if (
         !_.isUndefined(url) &&
         !_.isNull(url) &&
+        extensions[i] !== undefined &&
         _.includes(url.toLowerCase(), '.' + extensions[i]) &&
-        videoExtensions.includes(extensions[i])
+        videoExtensions.includes(extensions[i]!)
       ) {
         return (
           <a href={url} target="_blank" rel="noreferrer" className="w-[100px] h-auto overflow-auto">

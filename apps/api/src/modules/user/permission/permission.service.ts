@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DbService } from '@/db/db.service';
-import { CreatePermissionDto, UpdatePermissionDto } from './dto';
+import { CreatePermissionDto, UpdatePermissionDto } from './dto/index';
 import { createSuccessResult, createErrorResult, ServiceResult } from '@/common/interfaces';
 
 @Injectable()

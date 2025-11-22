@@ -15,7 +15,7 @@ import {
 import { PermissionService } from './permission.service';
 import { CheckAbility } from '@/common/decorators';
 import { PermissionGuard } from '@/common/guards';
-import { CreatePermissionDto, UpdatePermissionDto } from './dto';
+import { CreatePermissionDto, UpdatePermissionDto } from './dto/index';
 
 const permissionSubject = 'permission';
 

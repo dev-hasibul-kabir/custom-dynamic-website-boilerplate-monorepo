@@ -1,4 +1,4 @@
-import envVariables from '@/utils/env.js';
+import envVariables from '../utils/env.js';
 import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 

@@ -1,20 +1,11 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import nodeConfig from '../../packages/eslint-config/node.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import baseConfig from '../../packages/eslint-config/eslint.config.js';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  ...nodeConfig,
+  ...baseConfig,
   {
     files: ['**/*.ts'],
-    languageOptions: {
-      parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: __dirname,
-      },
-    },
+    // Simple Express/Node config without type-aware rules
+    // Keep basic TypeScript and security rules from base config
   },
 ];

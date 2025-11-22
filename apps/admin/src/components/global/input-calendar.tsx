@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import moment from 'moment';
+import { useState } from 'react';
 import { DATE_FORMAT } from '../../utils/date';
 
 const InputDateField = (props: {
@@ -128,7 +128,7 @@ const InputDateField = (props: {
 
   const displayValue = () => {
     if (isRange && Array.isArray(date)) {
-      if (date.length === 2) {
+      if (date.length === 2 && date[0] && date[1]) {
         return `${format(date[0], 'PPP')} - ${format(date[1], 'PPP')}`;
       }
       return date[0] ? format(date[0], 'PPP') : placeholder || 'Pick a date range';
@@ -167,8 +167,8 @@ const InputDateField = (props: {
               selected={Array.isArray(date) ? { from: date[0], to: date[1] } : undefined}
               onSelect={handleRangeSelect}
               numberOfMonths={2}
-              minDate={minDate}
-              maxDate={maxDate}
+              fromDate={minDate}
+              toDate={maxDate}
               disabled={isDateDisabled}
             />
           ) : (
@@ -176,8 +176,8 @@ const InputDateField = (props: {
               mode="single"
               selected={date instanceof Date ? date : undefined}
               onSelect={handleDateSelect}
-              minDate={minDate}
-              maxDate={maxDate}
+              fromDate={minDate}
+              toDate={maxDate}
               disabled={isDateDisabled}
             />
           )}

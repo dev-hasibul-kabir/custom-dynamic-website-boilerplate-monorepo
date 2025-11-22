@@ -60,7 +60,6 @@ export interface AppMailReplyProps {
   hide: () => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export declare namespace Demo {
   interface Task {
     id?: number;

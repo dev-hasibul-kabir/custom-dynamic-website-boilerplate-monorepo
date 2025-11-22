@@ -14,7 +14,7 @@ import {
 import { RoleService } from './role.service';
 import { CheckAbility } from '@/common/decorators';
 import { PermissionGuard } from '@/common/guards';
-import { AssignRolePermissionsDto, CreateRoleDto, UpdateRoleDto } from './dto';
+import { AssignRolePermissionsDto, CreateRoleDto, UpdateRoleDto } from './dto/index';
 
 @Controller('')
 export class RoleController {

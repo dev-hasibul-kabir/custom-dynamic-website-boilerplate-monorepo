@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
+import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import * as otpGenerator from 'otp-generator';
 
@@ -95,7 +95,7 @@ export class UtilityService {
     let result = '';
 
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         const value = obj[key];
 
         // Handle nested objects recursively

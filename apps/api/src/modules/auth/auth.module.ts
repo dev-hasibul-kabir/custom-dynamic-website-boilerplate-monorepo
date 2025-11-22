@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategy';
+import { JwtStrategy } from './strategy/index';
 
 @Module({
   imports: [JwtModule.register({})],

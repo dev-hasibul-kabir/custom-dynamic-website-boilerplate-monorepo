@@ -14,7 +14,7 @@ import {
 import { FolderService } from './folder.service';
 import { CheckAbility } from '@/common/decorators';
 import { PermissionGuard } from '@/common/guards';
-import { CreateFolderDto, UpdateFolderDto } from './dto';
+import { CreateFolderDto, UpdateFolderDto } from './dto/index';
 
 export const folderSubject = 'folder';
 

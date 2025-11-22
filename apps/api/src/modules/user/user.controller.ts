@@ -19,7 +19,7 @@ import {
   SignInUserDto,
   UserCreateDto,
   UserUpdateDto,
-} from './dto';
+} from './dto/index';
 import { UserService } from './user.service';
 
 @Controller()

@@ -1,18 +1,18 @@
 'use client';
 
-import React from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
-  TableFooter,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Lightbulb, Mouse } from 'lucide-react';
 import _ from 'lodash';
+import { Lightbulb, Mouse } from 'lucide-react';
+import React from 'react';
 
 export interface IAction {
   text?: string;
@@ -155,9 +155,7 @@ const DataTable = ({
             <TableCell colSpan={columns.length} className="text-center">
               <p className="text-orange-500 flex items-center justify-center gap-2">
                 <Lightbulb className="h-4 w-4" />
-                "Did you know? You can scroll horizontally by holding down the Shift key and using
-                your mouse scroll wheel. Try it out to navigate wide web pages or spreadsheets more
-                easily!" - Rafi Hasnain
+                {`"Did you know? You can scroll horizontally by holding down the Shift key and using your mouse scroll wheel. Try it out to navigate wide web pages or spreadsheets more easily!" - Rafi Hasnain`}
                 <Mouse className="h-4 w-4" />
               </p>
             </TableCell>

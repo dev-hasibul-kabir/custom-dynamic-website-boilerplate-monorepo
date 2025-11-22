@@ -13,7 +13,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { FileDto, UpdateFileDto } from './dto';
+import { FileDto, UpdateFileDto } from './dto/index';
 import { FileService } from './file.service';
 
 export const fileSubject = 'file';

@@ -2,7 +2,7 @@ import { createErrorResult, createSuccessResult, ServiceResult } from '@/common/
 import { DbService } from '@/db/db.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FileDto, UpdateFileDto } from './dto';
+import { FileDto, UpdateFileDto } from './dto/index';
 
 @Injectable()
 export class FileService {

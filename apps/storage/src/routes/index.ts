@@ -1,4 +1,3 @@
-import { Router } from 'express';
 import fileRoutes from './file/index.js';
 
 const allRoutes = [fileRoutes];
