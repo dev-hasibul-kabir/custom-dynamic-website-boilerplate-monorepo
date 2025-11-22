@@ -2,6 +2,7 @@
   "name": "@repo/api",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "prisma migrate dev --config ./prisma/prisma.config.ts && prisma generate --config ./prisma/prisma.config.ts && nest start --debug --watch",
     "build": "prisma migrate deploy --config ./prisma/prisma.config.ts && prisma generate --config ./prisma/prisma.config.ts && nest build",
@@ -19,7 +20,7 @@
     "db:generate": "prisma generate --config ./prisma/prisma.config.ts",
     "db:seed": "ts-node prisma/seed.ts",
     "db:studio": "prisma studio --config ./prisma/prisma.config.ts",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

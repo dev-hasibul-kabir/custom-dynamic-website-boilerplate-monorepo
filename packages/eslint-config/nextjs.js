@@ -34,6 +34,6 @@ export default [
     },
   },
   {
-    ignores: ["next-env.d.ts"],
+    ignores: ["next-env.d.ts", "**/prisma/generated", "**/prisma/generated/**"],
   },
 ];

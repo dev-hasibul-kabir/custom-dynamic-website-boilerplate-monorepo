@@ -53,7 +53,7 @@ custom-dynamic-website-boilerplate-monorepo/
 
 ### Prerequisites
 
-- Node.js >= 20.0.0
+- Node.js >= 24.11.1 (required for ESM support)
 - pnpm >= 8.0.0
 - PostgreSQL (for API)
 - Docker & Docker Compose (optional, for containerized deployment)
@@ -329,12 +329,35 @@ Shared TypeScript configurations:
 
 Shared Prettier configuration for consistent code formatting.
 
+## Module System
+
+This monorepo uses **ESM (ECMAScript Modules)** as the modern module system:
+
+- **All apps** use `"type": "module"` in their `package.json` files
+- **TypeScript** is configured with modern module resolution (`NodeNext` for runtime, `bundler` for builds)
+- **All imports** use ESM syntax (`import`/`export`) instead of CommonJS (`require`/`module.exports`)
+- **Shared packages** (ESLint config, Prettier config) are ESM modules
+
+### Benefits
+
+- Native ESM support in Node.js 24+
+- Better tree-shaking and optimization
+- Aligns with modern JavaScript standards
+- Improved performance and compatibility
+
+### Compatibility
+
+- **NestJS API**: Uses ESM with bundler module resolution for builds
+- **Next.js Apps**: Native ESM support (Next.js 15+)
+- **Express Storage**: Full ESM support with Node.js 24+
+
 ## Best Practices
 
 1. **Environment Variables**: Always use `.env.example` files as templates. Never commit `.env` files.
 2. **Database Migrations**: Use `db:migrate:dev` for development and `db:migrate:prod` for production.
 3. **Code Quality**: Run `pnpm lint` and `pnpm type-check` before committing.
 4. **Shared Configs**: Use shared packages for consistent tooling across apps.
+5. **Module System**: Always use ESM `import`/`export` syntax. Avoid CommonJS `require`/`module.exports`.
 
 ## License
 

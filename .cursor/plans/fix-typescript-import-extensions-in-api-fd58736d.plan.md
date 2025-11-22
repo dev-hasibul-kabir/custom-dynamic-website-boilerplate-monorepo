@@ -12,7 +12,7 @@ The API codebase has a configuration mismatch with NestJS best practices:
 - This creates inconsistent imports: some files have `.js` extensions, some don't
 - Path aliases (`@/...`) work but the overall setup is non-standard for NestJS
 
-**Root Cause**: NestJS traditionally uses CommonJS module system. The `` and `NodeNext` configuration forces ES module requirements (`.js` extensions) when NestJS doesn't need them. The compiled output already shows CommonJS format, confirming the mismatch.
+**Root Cause**: NestJS traditionally uses CommonJS module system. The ``and`NodeNext` configuration forces ES module requirements (`.js` extensions) when NestJS doesn't need them. The compiled output already shows CommonJS format, confirming the mismatch.
 
 ## Solution
 
@@ -48,7 +48,7 @@ All TypeScript files in `src/` that have `.js` in relative imports (found ~30+ f
 ## Implementation Steps
 
 1. **Update base TypeScript config**: Change `packages/typescript-config/nestjs.json` to use CommonJS
-2. **Update package.json**: Remove `` from `apps/api/package.json`
+2. **Update package.json**: Remove ``from`apps/api/package.json`
 3. **Remove .js extensions**: Systematically remove all `.js` extensions from relative imports in source files
 4. **Verify path aliases**: Ensure `@/` imports continue working (they should)
 5. **Test build**: Run type-check and build to ensure everything compiles correctly

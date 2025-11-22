@@ -13,3 +13,7 @@ build
 yarn.lock
 package-lock.json
 
+# Prisma
+**/prisma/generated
+**/prisma/generated/**
+

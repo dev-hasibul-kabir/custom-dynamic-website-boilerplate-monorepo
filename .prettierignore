@@ -35,6 +35,8 @@ pnpm-lock.yaml
 
 # Prisma
 prisma/migrations
+**/prisma/generated
+**/prisma/generated/**
 
 # Coverage
 coverage

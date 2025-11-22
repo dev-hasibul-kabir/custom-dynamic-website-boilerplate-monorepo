@@ -88,6 +88,8 @@ export default [
       ".next",
       "build",
       "next-env.d.ts",
+      "**/prisma/generated",
+      "**/prisma/generated/**",
     ],
   },
 ];

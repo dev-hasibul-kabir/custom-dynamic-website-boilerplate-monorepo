@@ -1,10 +1,11 @@
 // Environment validation will happen when this module is imported
 // For Next.js, we validate server-side using zod
+import { z } from 'zod';
+
 let apiBaseUrl: string | undefined;
 
 if (typeof window === 'undefined') {
   // Server-side: validate using zod
-  const { z } = require('zod');
   const envSchema = z.object({
     NEXT_PUBLIC_API_BASE_URL: z
       .string()
