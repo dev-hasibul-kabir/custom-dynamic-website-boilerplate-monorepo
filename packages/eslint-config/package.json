@@ -17,7 +17,8 @@
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.1.2",
-    "eslint-plugin-prettier": "^5.5.4"
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^15.0.0"
   },
   "peerDependencies": {
     "eslint-config-next": "^15.0.0"

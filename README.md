@@ -94,14 +94,14 @@ LOCAL_URL=http://localhost:5001
 NODE_ENV=development
 HOST=0.0.0.0
 PORT=5002
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+POSTGRES_DATABASE_URL=postgresql://user:password@localhost:5432/dbname
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_DATABASE_HOST=localhost
+REDIS_DATABASE_PORT=6379
 MONGO_DATABASE_URL=mongodb://localhost:27017/dbname
-MONGO_DB_USERNAME=
-MONGO_DB_PASSWORD=
-MONGO_DB_AUTHSOURCE=admin
+MONGO_DATABASE_USERNAME=
+MONGO_DATABASE_PASSWORD=
+MONGO_DATABASE_AUTHSOURCE=admin
 CORS_ORIGINS=http://localhost:5004,http://localhost:5003
 ```
 

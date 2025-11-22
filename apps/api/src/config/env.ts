@@ -1,6 +1,7 @@
-// Environment validation will happen when this module is imported
+// Load environment variables FIRST before anything else
 import { plainToInstance } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, validateSync } from 'class-validator';
+import 'dotenv/config';
 
 enum NodeEnv {
   Development = 'development',
@@ -15,6 +16,10 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
+  CORS_ORIGINS?: string;
+
+  @IsString()
+  @IsOptional()
   HOST?: string = '0.0.0.0';
 
   @IsString()
@@ -23,19 +28,11 @@ class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  DATABASE_URL!: string;
-
-  @IsString()
-  @IsNotEmpty()
   JWT_SECRET!: string;
 
   @IsString()
-  @IsOptional()
-  REDIS_HOST?: string;
-
-  @IsString()
-  @IsOptional()
-  REDIS_PORT?: string;
+  @IsNotEmpty()
+  POSTGRES_DATABASE_URL!: string;
 
   @IsString()
   @IsOptional()
@@ -43,19 +40,23 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  MONGO_DB_USERNAME?: string;
+  MONGO_DATABASE_USERNAME?: string;
 
   @IsString()
   @IsOptional()
-  MONGO_DB_PASSWORD?: string;
+  MONGO_DATABASE_PASSWORD?: string;
 
   @IsString()
   @IsOptional()
-  MONGO_DB_AUTHSOURCE?: string;
+  MONGO_DATABASE_AUTHSOURCE?: string;
 
   @IsString()
   @IsOptional()
-  CORS_ORIGINS?: string;
+  REDIS_DATABASE_HOST?: string;
+
+  @IsString()
+  @IsOptional()
+  REDIS_DATABASE_PORT?: string;
 
   // Email configuration - Server 1
   @IsString()
@@ -151,15 +152,16 @@ const env = validate(process.env);
 export const nodeEnv = env.NODE_ENV;
 export const host = env.HOST;
 export const port = env.PORT;
-export const databaseUrl = env.DATABASE_URL;
 export const jwtSecret = env.JWT_SECRET;
-export const redisHost = env.REDIS_HOST;
-export const redisPort = env.REDIS_PORT;
+export const databaseUrl = env.POSTGRES_DATABASE_URL;
+
 export const mongoDatabaseUrl = env.MONGO_DATABASE_URL;
-export const mongoDbUsername = env.MONGO_DB_USERNAME;
-export const mongoDbPassword = env.MONGO_DB_PASSWORD;
-export const mongoDbAuthSource = env.MONGO_DB_AUTHSOURCE;
-export const corsOrigins = env.CORS_ORIGINS;
+export const mongoDatabaseUsername = env.MONGO_DATABASE_USERNAME;
+export const mongoDatabasePassword = env.MONGO_DATABASE_PASSWORD;
+export const mongoDatabaseAuthSource = env.MONGO_DATABASE_AUTHSOURCE;
+
+export const redisDatabaseHost = env.REDIS_DATABASE_HOST;
+export const redisDatabasePort = env.REDIS_DATABASE_PORT;
 
 // Email configuration exports
 export const emailServer1 = env.EMAIL_SERVER_1;

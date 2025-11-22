@@ -57,3 +57,5 @@ logs/
 # Lock files (keep pnpm-lock.yaml, ignore others)
 yarn.lock
 package-lock.json
+
+/generated/prisma

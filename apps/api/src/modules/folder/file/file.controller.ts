@@ -31,12 +31,6 @@ export class FileController {
     return await this.fileService.save(dto);
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Get('folders/:folderName/files/:fileName')
-  getFile(@Param('folderName') folderName: string, @Param('fileName') fileName: string) {
-    return this.fileService.getFile(folderName, fileName);
-  }
-
   @CheckAbility({ subject: fileSubject, action: 'read' })
   @UseGuards(PermissionGuard)
   @HttpCode(HttpStatus.OK)

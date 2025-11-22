@@ -3,6 +3,7 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import prettierConfig from "eslint-config-prettier";
 import prettier from "eslint-plugin-prettier";
+import globals from "globals";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -15,6 +16,9 @@ export default [
         ecmaVersion: 2022,
         sourceType: "module",
       },
+      globals: {
+        ...globals.node,
+      },
     },
     plugins: {
       "@typescript-eslint": tseslint,
@@ -25,7 +29,6 @@ export default [
       // TypeScript ESLint recommended rules
       "@typescript-eslint/adjacent-overload-signatures": "error",
       "@typescript-eslint/ban-ts-comment": "error",
-      "@typescript-eslint/ban-types": "error",
       "@typescript-eslint/no-array-constructor": "error",
       "@typescript-eslint/no-duplicate-enum-values": "error",
       "@typescript-eslint/no-empty-object-type": "error",

@@ -1,7 +1,11 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';
 import { HashService } from '../src/util/hash.service';
 
-const prisma = new PrismaClient();
+const connectionString = `${process.env.POSTGRES_DATABASE_URL}`;
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 const hash = new HashService();
 
 const permissionSubjects = [

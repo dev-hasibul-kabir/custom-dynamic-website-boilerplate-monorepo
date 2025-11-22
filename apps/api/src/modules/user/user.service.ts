@@ -213,6 +213,7 @@ export class UserService {
       select: { id: true, name: true, email: true, password: true },
       where: { email: dto.email, status: 'ACTIVE' },
     });
+    console.log(user);
 
     if (!user) {
       return createErrorResult(

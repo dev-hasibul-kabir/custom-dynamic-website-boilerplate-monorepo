@@ -1,6 +1,6 @@
-import { errorLogger, debugLogger, infoLogger } from '../config/winston.js';
-import envVariables from './env.js';
+import { debugLogger, errorLogger, infoLogger } from '../config/winston.js';
 import constants from './constants.js';
+import envVariables from './env.js';
 
 interface Logger {
   debug: (tag: string, data?: unknown) => void;
@@ -10,7 +10,7 @@ interface Logger {
 
 const logger: Logger = {
   debug: (tag: string, data?: unknown) => {
-    if (envVariables.ENV === constants.DEV || envVariables.ENV === constants.STAG) {
+    if (envVariables.ENV === constants.DEV) {
       debugLogger.debug(tag, { tag, data });
     }
   },
