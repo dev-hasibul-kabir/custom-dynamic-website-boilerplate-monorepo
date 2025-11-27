@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 export interface IImageSelectOption {
@@ -59,6 +58,7 @@ const ImageSelectSyncField = (props: {
           <SelectValue placeholder={placeholder || 'Select an option...'}>
             {selectedOption && (
               <div className="flex items-center gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={selectedOption.imageUrl}
                   alt=""
@@ -73,6 +73,7 @@ const ImageSelectSyncField = (props: {
           {options.map((option: IImageSelectOption) => (
             <SelectItem key={String(option.value)} value={String(option.value)}>
               <div className="flex items-center gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={option.imageUrl} alt="" className="h-8 w-8 object-cover rounded" />
                 <span>{option.imageUrl}</span>
               </div>

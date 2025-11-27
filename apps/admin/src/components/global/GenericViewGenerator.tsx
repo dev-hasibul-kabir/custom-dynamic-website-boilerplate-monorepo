@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { DataTable, ModalConfirmation, Modal, GenericFormGenerator } from '../index';
-import { callGetApi, callDeleteApi, callPutApi, callPostApi } from '../../libs/api';
-import { IAction } from './data-table';
-import { IField } from './GenericFormGenerator';
-import { getFormData } from '../../utils';
 import * as _ from 'lodash';
 import { Pencil, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { callDeleteApi, callGetApi, callPostApi, callPutApi } from '../../libs/api';
+import { getFormData } from '../../utils';
+import { DataTable, GenericFormGenerator, Modal, ModalConfirmation } from '../index';
+import { IAction } from './data-table';
+import { IField } from './GenericFormGenerator';
 
 const DeleteItemComponent = ({
   isConfirmationModalOpen,
@@ -365,6 +365,7 @@ function GenericViewGenerator({
     // console.debug({ tempActions });
 
     setActions(tempActions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -387,6 +388,7 @@ function GenericViewGenerator({
 
       setData(tempData);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionDatum]);
 
   useEffect(() => {
@@ -466,6 +468,7 @@ function GenericViewGenerator({
               name={name}
             />
           ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isAddFormModalOpen, fields],
       )}
       {useMemo(
@@ -491,6 +494,7 @@ function GenericViewGenerator({
               name={name}
             />
           ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isEditFormModalOpen, datum, fields, editFields],
       )}
       {useMemo(
@@ -510,6 +514,7 @@ function GenericViewGenerator({
               }}
             />
           ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isDeleteFormModalOpen],
       )}
     </>

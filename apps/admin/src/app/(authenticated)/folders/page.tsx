@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
-import { File } from 'lucide-react';
-import _ from 'lodash';
-import GenericViewGenerator from '@/components/global/GenericViewGenerator';
-import { getGeneralStatusOptions } from '@/utils';
 import { IAction } from '@/components/global/data-table';
+import GenericViewGenerator from '@/components/global/GenericViewGenerator';
+import { Card, CardContent } from '@/components/ui/card';
+import { getGeneralStatusOptions } from '@/utils';
+import _ from 'lodash';
+import { File } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 
 const Page = () => {
   const router = useRouter();
@@ -80,7 +80,7 @@ const Page = () => {
               ]}
             />
           ),
-          [],
+          [router],
         )}
       </CardContent>
     </Card>

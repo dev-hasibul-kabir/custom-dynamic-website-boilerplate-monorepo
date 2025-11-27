@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -8,10 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import _ from 'lodash';
+import React, { useState } from 'react';
 import { ISelectOption } from './Dropdown';
 
 const SelectASyncField = (props: {
@@ -43,12 +43,13 @@ const SelectASyncField = (props: {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const debouncedSearch = useCallback(
-    _.debounce((searchKey: string) => {
-      if (searchKey.length > 2) {
-        loadOptions(searchKey);
-      }
-    }, 500),
+  const debouncedSearch = React.useMemo(
+    () =>
+      _.debounce((searchKey: string) => {
+        if (searchKey.length > 2) {
+          loadOptions(searchKey);
+        }
+      }, 500),
     [loadOptions],
   );
 

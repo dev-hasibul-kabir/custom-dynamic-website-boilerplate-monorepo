@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, File as FileIcon, Image as ImageIcon, Upload, X } from 'lucide-react';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface FileItem {
   id: string;
@@ -114,10 +114,16 @@ const FileSelectField = ({
     setSelectedFiles(files);
   }, [value]);
 
+  const selectedFilesRef = useRef(selectedFiles);
+
+  useEffect(() => {
+    selectedFilesRef.current = selectedFiles;
+  }, [selectedFiles]);
+
   // Cleanup object URLs on unmount
   React.useEffect(() => {
     return () => {
-      selectedFiles.forEach(fileItem => {
+      selectedFilesRef.current.forEach(fileItem => {
         if (fileItem.preview && fileItem.preview.startsWith('blob:')) {
           URL.revokeObjectURL(fileItem.preview);
         }
@@ -330,6 +336,7 @@ const FileSelectField = ({
   const getFileIcon = (fileItem: FileItem) => {
     if (fileItem.preview) {
       return (
+        /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={fileItem.preview}
           alt="Preview"

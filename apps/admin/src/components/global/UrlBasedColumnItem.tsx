@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import copy from 'copy-to-clipboard';
 import _ from 'lodash';
+import { useCallback, useMemo } from 'react';
 
 // Removed inline style - using Tailwind classes instead
 
@@ -10,39 +10,45 @@ const UrlBasedColumnItem = ({ url }: { url: string }) => {
     if (_.isUndefined(url) || _.isNull(url)) return null;
 
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    const videoExtensions = ['mp4', 'webm'];
-    const docExtensions = ['.pdf'];
-    const extensions = [...imageExtensions, ...videoExtensions, ...docExtensions];
 
-    for (let i = 0; i < _.size(extensions); i++) {
-      // console.debug({ extension: extensions[i] });
-
-      if (
-        !_.isUndefined(url) &&
-        !_.isNull(url) &&
-        _.includes(url.toLowerCase(), '.' + extensions[i]) &&
-        _.includes(imageExtensions, extensions[i])
-      ) {
-        return (
-          <a href={url} target="_blank" rel="noreferrer" className="w-[100px] h-auto overflow-auto">
-            <img src={url} width={100} alt="Preview" />
-          </a>
-        );
-      } else if (
-        !_.isUndefined(url) &&
-        !_.isNull(url) &&
-        extensions[i] !== undefined &&
-        _.includes(url.toLowerCase(), '.' + extensions[i]) &&
-        videoExtensions.includes(extensions[i]!)
-      ) {
-        return (
-          <a href={url} target="_blank" rel="noreferrer" className="w-[100px] h-auto overflow-auto">
-            <video src={url} width={100} />
-          </a>
-        );
-      }
+    if (imageExtensions.some(ext => url.toLowerCase().endsWith('.' + ext))) {
+      return (
+        <a href={url} target="_blank" rel="noreferrer" className="w-[100px] h-auto overflow-auto">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={url} width={100} alt="Preview" />
+        </a>
+      );
     }
 
+    // Check for video extensions
+    if (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg')) {
+      return (
+        <video src={url} controls className="w-[100px] h-auto">
+          <track kind="captions" />
+        </video>
+      );
+    }
+
+    // Check for document extensions
+    if (
+      url.endsWith('.pdf') ||
+      url.endsWith('.doc') ||
+      url.endsWith('.docx') ||
+      url.endsWith('.xls') ||
+      url.endsWith('.xlsx') ||
+      url.endsWith('.ppt') ||
+      url.endsWith('.pptx') ||
+      url.endsWith('.txt') ||
+      url.endsWith('.csv')
+    ) {
+      return (
+        <a href={url} target="_blank" rel="noreferrer" className="w-[100px] h-auto overflow-auto">
+          Document
+        </a>
+      );
+    }
+
+    // Default case: display URL as a link
     return (
       <a href={url} target="_blank" rel="noreferrer" className="w-[100px] h-auto overflow-auto">
         {url}
@@ -71,7 +77,7 @@ const UrlBasedColumnItem = ({ url }: { url: string }) => {
         )}
       </div>
     ),
-    [],
+    [url, getView],
   );
 };
 

@@ -42,6 +42,7 @@ const AppTopbar = ({ onMenuToggle, isMenuOpen }: AppTopbarProps) => {
       </button>
 
       <Link href="/" className="layout-topbar-logo">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/images/example-logo.svg" width="auto" height="100%" alt="Example" />
       </Link>
 

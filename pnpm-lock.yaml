@@ -360,6 +360,9 @@ importers:
       '@prisma/client':
         specifier: ^7.0.0
         version: 7.0.0(prisma@7.0.0)(typescript@5.9.3)
+      '@prisma/client-runtime-utils':
+        specifier: ^7.0.0
+        version: 7.0.0
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.20
@@ -387,6 +390,9 @@ importers:
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
+      module-alias:
+        specifier: ^2.2.3
+        version: 2.2.3
       mongoose:
         specifier: ^8.20.0
         version: 8.20.0
@@ -11465,6 +11471,10 @@ packages:
     hasBin: true
     dependencies:
       minimist: 1.2.8
+
+  /module-alias@2.2.3:
+    resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
+    dev: false
 
   /moment-timezone@0.5.48:
     resolution: {integrity: sha512-f22b8LV1gbTO2ms2j2z13MuPogNoh5UzxL3nzNAYKGraILnbGc9NEE6dyiiiLv46DGRb8A4kg8UKWLjPthxBHw==}

@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
-import _ from 'lodash';
 import GenericViewGenerator from '@/components/global/GenericViewGenerator';
 import { IAction } from '@/components/global/data-table';
+import { Card, CardContent } from '@/components/ui/card';
+import _ from 'lodash';
+import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 
 const Page = () => {
   const router = useRouter();
@@ -97,7 +97,7 @@ const Page = () => {
               ]}
             />
           ),
-          [],
+          [router],
         )}
       </CardContent>
     </Card>

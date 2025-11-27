@@ -610,7 +610,7 @@ export default function GenericFormGenerator({
     ) {
       onValueModify(formik.values);
     }
-  }, [formik.values]);
+  }, [formik.values, onValueModify]);
 
   return (
     <form onSubmit={formik.handleSubmit}>
