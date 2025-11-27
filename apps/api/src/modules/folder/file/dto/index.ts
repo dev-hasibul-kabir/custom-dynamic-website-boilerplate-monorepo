@@ -1,5 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { FileType, GeneralStatus } from '@prisma/client';
+
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
