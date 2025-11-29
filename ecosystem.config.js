@@ -1,0 +1,62 @@
+module.exports = {
+  apps: [
+    {
+      name: "storage",
+      cwd: "apps/storage",
+      script: "dist/index.js",
+      instances: "max",
+      exec_mode: "cluster",
+      autorestart: true,
+      watch: false,
+      env_file: "apps/storage/.env",
+      env: {
+        PORT: 5001,
+        NODE_ENV: "production",
+      },
+    },
+    {
+      name: "api",
+      cwd: "apps/api",
+      script: "dist/src/main.js",
+      instances: "max",
+      exec_mode: "cluster",
+      autorestart: true,
+      watch: false,
+      env_file: "apps/api/.env",
+      env: {
+        PORT: 5002,
+        NODE_ENV: "production",
+      },
+    },
+    {
+      name: "admin",
+      cwd: ".",
+      script: "pnpm",
+      args: ["--filter", "@repo/admin", "start"],
+      instances: "max",
+      exec_mode: "cluster",
+      autorestart: true,
+      watch: false,
+      env_file: "apps/admin/.env",
+      env: {
+        PORT: 5003,
+        NODE_ENV: "production",
+      },
+    },
+    {
+      name: "web",
+      cwd: ".",
+      script: "pnpm",
+      args: ["--filter", "@repo/web", "start"],
+      instances: "max",
+      exec_mode: "cluster",
+      autorestart: true,
+      watch: false,
+      env_file: "apps/web/.env",
+      env: {
+        PORT: 5004,
+        NODE_ENV: "production",
+      },
+    },
+  ],
+};
