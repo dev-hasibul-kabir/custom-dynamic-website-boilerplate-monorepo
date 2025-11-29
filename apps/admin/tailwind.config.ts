@@ -70,11 +70,24 @@ const config: Config = {
           border: 'var(--surface-border)',
           900: 'var(--surface-900)',
         },
+        // Text colors
+        'text-color': 'var(--text-color)',
+        'text-color-secondary': 'var(--text-color-secondary)',
+        // Primary color
+        'primary-color': 'var(--primary-color)',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        layout: '12px',
+      },
+      transitionDuration: {
+        layout: '0.2s',
+      },
+      boxShadow: {
+        layout:
+          '0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.08)',
       },
       keyframes: {
         'accordion-down': {

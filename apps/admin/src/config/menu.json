@@ -10,10 +10,12 @@
     "items": [
       {
         "label": "Roles",
+        "icon": "Shield",
         "to": "/roles"
       },
       {
         "label": "Users",
+        "icon": "User",
         "to": "/users"
       }
     ]
