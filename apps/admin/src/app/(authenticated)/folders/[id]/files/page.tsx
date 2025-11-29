@@ -55,15 +55,7 @@ const Page = () => {
                 subtitle="Manage file here!"
                 viewAll={{
                   uri: `/api/v1/folders/${folderId}/files`,
-                  ignoredColumns: [
-                    'id',
-                    'folderId',
-                    'folder',
-                    'name',
-                    'type',
-                    'createdAt',
-                    'updatedAt',
-                  ],
+                  ignoredColumns: ['id', 'folderId', 'folder', 'type', 'createdAt', 'updatedAt'],
                   scopedColumns: {
                     url: (item: any) => <UrlBasedColumnItem url={item.url} />,
                   },
