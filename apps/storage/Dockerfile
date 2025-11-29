@@ -41,7 +41,6 @@ RUN pnpm install --frozen-lockfile --prod
 
 # Copy built application
 COPY --from=builder /app/apps/storage/dist ./apps/storage/dist
-COPY --from=builder /app/apps/storage/src/views ./apps/storage/src/views
 
 WORKDIR /app/apps/storage
 
