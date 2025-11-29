@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { DbService } from '@/db/db.service';
 import { AbilityBuilder } from '@casl/ability';
 import { createPrismaAbility } from '@casl/prisma';
-import { DbService } from '@/db/db.service.js';
-import { AppAbility, AppActions, AppSubjects } from './ability.types.js';
+import { Injectable } from '@nestjs/common';
+import { AppAbility, AppActions, AppSubjects } from './ability.types';
 
 @Injectable()
 export class AbilityFactory {
