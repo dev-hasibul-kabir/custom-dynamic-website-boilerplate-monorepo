@@ -47,6 +47,33 @@ export interface IField {
   col?: number;
 }
 
+/**
+ * Maps number of columns to Tailwind grid column span classes
+ * @param numberOfColumn - Number of columns (1-12)
+ * @returns Tailwind classes for responsive column spans
+ */
+const getColumnClasses = (numberOfColumn: number): string => {
+  const colSpan = 12 / numberOfColumn;
+
+  // Map to Tailwind col-span classes - covers all common cases
+  const colSpanMap: Record<number, string> = {
+    1: 'md:col-span-12 xl:col-span-12',
+    2: 'md:col-span-6 xl:col-span-6',
+    3: 'md:col-span-4 xl:col-span-4',
+    4: 'md:col-span-3 xl:col-span-3',
+    6: 'md:col-span-2 xl:col-span-2',
+    12: 'md:col-span-1 xl:col-span-1',
+  };
+
+  // Return mapped classes or default to full width if not found
+  if (colSpanMap[colSpan]) {
+    return `sm:col-span-12 ${colSpanMap[colSpan]}`;
+  }
+
+  // Fallback: full width on all breakpoints for edge cases
+  return 'sm:col-span-12 md:col-span-12 xl:col-span-12';
+};
+
 export default function GenericFormGenerator({
   datum = null,
   fields,
@@ -547,10 +574,7 @@ export default function GenericFormGenerator({
         const fieldToRender = fields[count];
         if (fieldToRender) {
           insideItems.push(
-            <div
-              key={'inside-' + (i + 1) + '-column'}
-              className={`field sm:col-12 md:col-${12 / numberOfColumn} xl:col-${12 / numberOfColumn}`}
-            >
+            <div key={'inside-' + (i + 1) + '-column'} className={getColumnClasses(numberOfColumn)}>
               {getField(fieldToRender)}
             </div>,
           );
@@ -561,13 +585,16 @@ export default function GenericFormGenerator({
       }
 
       formFields.push(
-        <div key={'outside-' + (count + 1) + '-row-group'} className="formgrid grid">
+        <div
+          key={'outside-' + (count + 1) + '-row-group'}
+          className="grid grid-cols-1 md:grid-cols-12 gap-4"
+        >
           {_.map(insideItems, insideItem => insideItem)}
         </div>,
       );
     } else {
       formFields.push(
-        <div key={'outside-' + (count + 1) + '-row'} className="field">
+        <div key={'outside-' + (count + 1) + '-row'} className="w-full mb-4">
           {getField(currentField)}
         </div>,
       );

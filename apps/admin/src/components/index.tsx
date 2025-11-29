@@ -27,11 +27,9 @@ export {
   DataTable,
   FileUpload as FileSelectField,
   GenericFormGenerator,
-  // Generators
   GenericViewGenerator,
   ImageDropdown as ImageSelectSyncField,
   InputCalender as InputDateField,
-  // Fields
   InputText as InputTextField,
   Modal,
   ModalConfirmation,
