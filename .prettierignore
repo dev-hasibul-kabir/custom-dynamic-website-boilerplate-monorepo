@@ -46,3 +46,21 @@ coverage
 .cache
 .parcel-cache
 
+# TypeScript config files
+tsconfig.json
+tsconfig.*.json
+**/tsconfig.json
+**/tsconfig.*.json
+
+# Next.js config files
+**/next.config.js
+**/next.config.ts
+**/next.config.mjs
+
+# Other config files
+**/tailwind.config.ts
+**/postcss.config.*
+**/eslint.config.*
+**/components.json
+**/nest-cli.json
+

@@ -5,6 +5,8 @@ node_modules
 # Build outputs
 dist
 build
+.next
+out
 *.tsbuildinfo
 
 # Logs
@@ -31,9 +33,25 @@ yarn.lock
 package-lock.json
 pnpm-lock.yaml
 
-# Prisma
-prisma/migrations
-prisma/generated
+# TypeScript config files
+tsconfig.json
+tsconfig.*.json
+
+# Next.js config files
+next.config.js
+next.config.ts
+next.config.mjs
+
+# Other config files
+tailwind.config.ts
+postcss.config.js
+postcss.config.cjs
+postcss.config.mjs
+eslint.config.js
+eslint.config.mjs
+
+# Next.js generated
+next-env.d.ts
 
 # Coverage
 coverage
@@ -42,11 +60,4 @@ coverage
 # Cache
 .cache
 .parcel-cache
-
-# TypeScript config files
-tsconfig.json
-tsconfig.*.json
-
-# NestJS config files
-nest-cli.json
 

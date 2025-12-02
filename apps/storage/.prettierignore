@@ -17,3 +17,8 @@ package-lock.json
 **/prisma/generated
 **/prisma/generated/**
 
+# TypeScript config files
+tsconfig.json
+tsconfig.*.json
+tsconfig.build.json
+
