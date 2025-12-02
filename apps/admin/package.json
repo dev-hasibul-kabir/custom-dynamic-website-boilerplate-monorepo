@@ -8,11 +8,11 @@
     "start": "next start -p 5003",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "tsc --noEmit",
     "format": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "test": "echo \"No tests configured yet\"",
-    "clean": "rm -rf .next"
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next",
+    "test": "echo \"No tests configured yet\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",

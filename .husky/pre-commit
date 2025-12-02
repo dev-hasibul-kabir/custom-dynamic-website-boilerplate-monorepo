@@ -4,8 +4,8 @@
 echo "🔍 Running pre-commit checks..."
 
 echo "📝 Checking code formatting..."
-pnpm format:check || {
-  echo "❌ Format check failed. Please run 'pnpm format' to fix formatting issues."
+pnpm format || {
+  echo "❌ Format check failed. Please fix formatting errors."
   exit 1
 }
 
