@@ -8,7 +8,6 @@ module.exports = {
       exec_mode: "cluster",
       autorestart: true,
       watch: false,
-      env_file: "apps/storage/.env",
       env: {
         PORT: 5001,
         NODE_ENV: "production",
@@ -22,7 +21,6 @@ module.exports = {
       exec_mode: "cluster",
       autorestart: true,
       watch: false,
-      env_file: "apps/api/.env",
       env: {
         PORT: 5002,
         NODE_ENV: "production",
@@ -37,7 +35,6 @@ module.exports = {
       exec_mode: "cluster",
       autorestart: true,
       watch: false,
-      env_file: "apps/admin/.env",
       env: {
         PORT: 5003,
         NODE_ENV: "production",
@@ -52,7 +49,6 @@ module.exports = {
       exec_mode: "cluster",
       autorestart: true,
       watch: false,
-      env_file: "apps/web/.env",
       env: {
         PORT: 5004,
         NODE_ENV: "production",
