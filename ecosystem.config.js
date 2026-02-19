@@ -1,3 +1,5 @@
+// Env: storage and api load .env from their cwd via node_args. Override PORT/NODE_ENV here.
+// admin and web (Next) load .env from their app dir when pnpm runs their start script.
 module.exports = {
   apps: [
     {
@@ -8,6 +10,7 @@ module.exports = {
       exec_mode: "cluster",
       autorestart: true,
       watch: false,
+      node_args: "-r dotenv/config",
       env: {
         PORT: 5001,
         NODE_ENV: "production",
@@ -21,6 +24,7 @@ module.exports = {
       exec_mode: "cluster",
       autorestart: true,
       watch: false,
+      node_args: "-r dotenv/config",
       env: {
         PORT: 5002,
         NODE_ENV: "production",
