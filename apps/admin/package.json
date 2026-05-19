@@ -6,6 +6,12 @@
     "dev": "next dev -p 5003",
     "build": "next build",
     "start": "next start -p 5003",
+    "pm2:start": "pm2 start ecosystem.config.cjs --env production",
+    "pm2:stop": "pm2 stop ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart ecosystem.config.cjs",
+    "pm2:delete": "pm2 delete ecosystem.config.cjs",
+    "pm2:logs": "pm2 logs",
+    "pm2:status": "pm2 status",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -109,7 +115,8 @@
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "sass": "^1.71.0",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "pm2": "^6.0.14"
   },
   "engines": {
     "npm": ">=9.5.1",

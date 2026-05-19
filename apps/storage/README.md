@@ -15,24 +15,15 @@ A modern file storage system built with Express.js, featuring folder-based organ
 
 ## Prerequisites
 
-- Node.js >= 14.x
-- npm or yarn
+- Node.js >= 24.11.1
+- pnpm >= 8.0.0 (from monorepo root)
 
 ## Installation
 
-1. Clone the repository:
+From the monorepo root:
 
 ```bash
-git clone <repository-url>
-cd node-express-dynamic-storage
-```
-
-2. Install dependencies:
-
-```bash
-yarn install
-# or
-npm install
+pnpm install
 ```
 
 3. Create a `.env` file in the root directory:
@@ -59,22 +50,23 @@ mkdir -p attachments logs
 ### Development Mode
 
 ```bash
-yarn start:dev
-# or
-npm run start:dev
+pnpm dev:storage
+# or from this app directory
+pnpm dev
 ```
 
 The server will start on `http://localhost:5001` (or the port specified in `.env`).
 
-### Production Mode
+### Production Mode (PM2)
+
+Build and start with PM2 from this app directory (loads `apps/storage/.env` via `ecosystem.config.cjs`):
 
 ```bash
-yarn start:prod
-# or
-npm run start:prod
+pnpm build
+pnpm pm2:start
 ```
 
-This uses PM2 to run the application in cluster mode.
+Or deploy all apps from the monorepo root: `./scripts/deploy/start.sh` or `pnpm deploy:start`.
 
 ## Usage
 

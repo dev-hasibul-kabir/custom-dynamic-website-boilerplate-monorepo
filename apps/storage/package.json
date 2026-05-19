@@ -9,6 +9,12 @@
     "dev": "tsx watch src/index.ts",
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "start": "node dist/index.js",
+    "pm2:start": "pm2 start ecosystem.config.cjs --env production",
+    "pm2:stop": "pm2 stop ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart ecosystem.config.cjs",
+    "pm2:delete": "pm2 delete ecosystem.config.cjs",
+    "pm2:logs": "pm2 logs",
+    "pm2:status": "pm2 status",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -68,6 +74,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.7.0",
     "rimraf": "^5.0.5",
-    "prettier": "^3.2.4"
+    "prettier": "^3.2.4",
+    "pm2": "^6.0.14"
   }
 }

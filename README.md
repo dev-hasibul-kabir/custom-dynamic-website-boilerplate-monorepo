@@ -15,7 +15,7 @@ custom-dynamic-website-boilerplate-monorepo/
 │   ├── eslint-config/      # Shared ESLint configuration
 │   ├── typescript-config/  # Shared TypeScript configurations
 │   └── prettier-config/    # Shared Prettier configuration
-├── docker-compose.yml
+├── scripts/deploy/    # PM2 deploy scripts (start, stop, restart)
 ├── turbo.json
 └── package.json
 ```
@@ -56,7 +56,8 @@ custom-dynamic-website-boilerplate-monorepo/
 - Node.js >= 24.11.1 (required for ESM support)
 - pnpm >= 8.0.0
 - PostgreSQL (for API)
-- Docker & Docker Compose (optional, for containerized deployment)
+- Redis (for API queues)
+- PM2 (installed per app via `pnpm install`; used for production)
 
 ### Installation
 
@@ -238,34 +239,64 @@ GET /health/ping
 
 Returns a simple pong response to verify the API is running.
 
-## Docker Deployment
+## Production Deployment (PM2)
 
-### Build and run with Docker Compose:
+Each app has its own `ecosystem.config.cjs` with `cwd` set to the app directory so `.env` loads correctly. Deploy from the monorepo root using the bash scripts (or npm aliases).
 
-```bash
-docker-compose up --build
-```
+### Deployment checklist
 
-### Run in background:
-
-```bash
-docker-compose up -d
-```
-
-### Stop services:
+1. Copy `.env.example` → `.env` in each app (`apps/storage`, `apps/api`, `apps/admin`, `apps/web`)
+2. Set production URLs (`NEXT_PUBLIC_*`, `CORS_ORIGINS`, `PUBLIC_URL`, database URLs)
+3. Run full deploy and start:
 
 ```bash
-docker-compose down
+./scripts/deploy/start.sh
+# or
+pnpm deploy:start
 ```
 
-### Build individual services:
+4. Stop all apps (stop + delete from PM2):
 
 ```bash
-docker build -f apps/api/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-api .
-docker build -f apps/admin/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-admin .
-docker build -f apps/web/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-web .
-docker build -f apps/storage/Dockerfile -t custom-dynamic-website-boilerplate-monorepo-storage .
+./scripts/deploy/stop.sh
+# or
+pnpm deploy:stop
 ```
+
+5. Restart (stop then full start workflow):
+
+```bash
+./scripts/deploy/restart.sh
+# or
+pnpm deploy:restart
+```
+
+6. Verify: storage `:5001`, API `:5002` + `/health`, admin `:5003`, web `:5004`
+
+### What `start.sh` does
+
+1. `pnpm install`
+2. `pnpm build`
+3. `pnpm db:migrate:prod` and `pnpm db:seed` (API)
+4. PM2 start in order: storage → api → admin → web
+
+Optional environment flags:
+
+- `SKIP_INSTALL=1` — skip `pnpm install`
+- `SKIP_BUILD=1` — skip `pnpm build`
+- `SKIP_DB=1` — skip migrate and seed
+- `SKIP_DB_SEED=1` — skip seed only (still runs migrate)
+
+### Per-app PM2 (manual)
+
+```bash
+pnpm --filter @repo/storage pm2:start
+pnpm --filter @repo/api pm2:start
+pnpm --filter @repo/admin pm2:start
+pnpm --filter @repo/web pm2:start
+```
+
+When multiple client projects share one server, use unique PM2 process names per project in each app's `ecosystem.config.cjs` (e.g. `acme-api` instead of `@repo/api`).
 
 ## Environment Validation
 
@@ -304,6 +335,9 @@ Validation is implemented using:
 - `pnpm db:migrate:prod` - Run production migrations
 - `pnpm db:seed` - Seed database
 - `pnpm db:studio` - Open Prisma Studio
+- `pnpm deploy:start` - Full production deploy + PM2 start (all apps)
+- `pnpm deploy:stop` - Stop and remove all apps from PM2
+- `pnpm deploy:restart` - Stop then full deploy + start
 
 ## Shared Packages
 
