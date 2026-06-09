@@ -1,10 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Command,
   CommandEmpty,
@@ -13,9 +10,11 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { Check, X, ChevronsUpDown } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import _ from 'lodash';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+import React from 'react';
 import { ISelectOption } from './Dropdown';
 
 export interface IMultiSelectOption extends ISelectOption {
@@ -46,7 +45,7 @@ const MultiSelectSyncField = (props: {
   } = props;
 
   const [open, setOpen] = React.useState(false);
-  const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
+  const selectedValues = (Array.isArray(value) ? value : value ? [value] : []).map(String);
 
   const handleSelect = (optionValue: string) => {
     const newValues = selectedValues.includes(optionValue)

@@ -118,6 +118,13 @@ export default function GenericFormGenerator({
                   : Array.isArray(field.initialValue)
                     ? field.initialValue
                     : [field.initialValue];
+            } else if (field.type === 'chips') {
+              temp[field.name] =
+                field.initialValue === undefined || field.initialValue === null
+                  ? []
+                  : Array.isArray(field.initialValue)
+                    ? field.initialValue
+                    : [field.initialValue];
             } else {
               temp[field.name] =
                 field.initialValue === undefined || field.initialValue === null
@@ -142,6 +149,24 @@ export default function GenericFormGenerator({
                 picked[field.name] = Array.isArray(value) ? value : [value];
               } else {
                 picked[field.name] = [];
+              }
+            }
+            if (field.type === 'chips') {
+              const value = picked[field.name];
+              if (value === undefined || value === null) {
+                picked[field.name] = [];
+              } else if (!Array.isArray(value)) {
+                picked[field.name] = [value];
+              }
+            }
+            if (field.type === 'multi-select-sync') {
+              const value = picked[field.name];
+              if (value === undefined || value === null) {
+                picked[field.name] = [];
+              } else if (Array.isArray(value)) {
+                picked[field.name] = value.map(String);
+              } else {
+                picked[field.name] = [String(value)];
               }
             }
           });
@@ -400,24 +425,6 @@ export default function GenericFormGenerator({
         />
       );
 
-    if (field.type === 'richtext') {
-      // EditorField component not available - using textarea as fallback
-      return (
-        <TextareaField
-          key={field.name}
-          name={field.name}
-          title={field.title}
-          placeholder={field.placeholder}
-          // @ts-ignore
-          value={formik.values[field.name] ?? ''}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          isDisabled={field.isDisabled}
-          errorMessage={errorMessage}
-        />
-      );
-    }
-
     if (field.type === 'select-async' && field.loadOptions)
       return (
         <SelectAsyncField
@@ -483,20 +490,27 @@ export default function GenericFormGenerator({
         />
       );
 
-    if (field.type === 'chips')
+    if (field.type === 'chips') {
+      const rawChips = (formik.values as Record<string, unknown>)[field.name];
+      const chipValue = Array.isArray(rawChips)
+        ? rawChips
+        : rawChips === undefined || rawChips === null || rawChips === ''
+          ? []
+          : [String(rawChips)];
+
       return (
         <ChipsField
           key={field.name}
           name={field.name}
           title={field.title}
           placeholder={field.placeholder}
-          // @ts-ignore
-          value={formik.values[field.name] ?? ''}
+          value={chipValue}
           setFieldValue={formik.setFieldValue}
           isDisabled={field.isDisabled}
           errorMessage={errorMessage}
         />
       );
+    }
 
     if (field.type === 'file-select') {
       // Handle value as array for multiple files

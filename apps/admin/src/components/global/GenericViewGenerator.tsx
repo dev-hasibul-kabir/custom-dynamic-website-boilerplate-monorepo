@@ -1,6 +1,9 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import * as _ from 'lodash';
 import { Pencil, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { callDeleteApi, callGetApi, callPostApi, callPutApi } from '../../libs/api';
 import { getFormData } from '../../utils';
@@ -87,6 +90,7 @@ const EditItemComponent = ({
         datum={datum}
         fields={fields}
         nonEdibleFields={nonEdibleFields}
+        enableReinitialize
         callback={(data, resetForm) => {
           // console.debug({ data });
 
@@ -226,7 +230,8 @@ function GenericViewGenerator({
     onSuccess?: (data: any) => void;
   };
   addNew?: {
-    uri: string;
+    uri?: string;
+    route?: string;
     callback?: (data: any) => any;
     buttonText?: string;
   };
@@ -236,7 +241,12 @@ function GenericViewGenerator({
     onDataModify?: (data: any) => any;
     onSuccess?: (data: any) => void;
   };
-  editExisting?: { uri: string; identifier: string; callback?: (data: any) => any };
+  editExisting?: {
+    uri?: string;
+    identifier?: string;
+    route?: string;
+    callback?: (data: any) => any;
+  };
   removeOne?: { uri: string; identifier: string; callback?: () => any };
   fields?: IField[];
   editFields?: IField[];
@@ -245,6 +255,8 @@ function GenericViewGenerator({
   filtration?: any;
   pagination?: any;
 }) {
+  const router = useRouter();
+
   // Props
   const {
     uri: getAllApiUri,
@@ -257,6 +269,7 @@ function GenericViewGenerator({
   } = viewAll;
   const {
     uri: postApiUri,
+    route: addNewRoute,
     callback: addNewCallback,
     buttonText: addNewItemButtonText,
   } = addNew || {};
@@ -268,7 +281,8 @@ function GenericViewGenerator({
   } = viewOne || {};
   const {
     uri: putApiUri,
-    identifier: putIdentifier,
+    identifier: putIdentifier = '{id}',
+    route: editRoute,
     callback: editExistingCallback,
   } = editExisting || {};
   const {
@@ -335,16 +349,19 @@ function GenericViewGenerator({
   useEffect(() => {
     const tempActions: IAction[] = [...actions];
 
-    if (actionIdentifier && getOneApiUri && getOneIdentifier && putApiUri && putIdentifier) {
+    if (actionIdentifier && (editRoute || (getOneApiUri && getOneIdentifier && putApiUri))) {
       tempActions.push({
         text: 'Edit',
         icon: <Pencil className="h-4 w-4" />,
         color: 'outline',
         callback: id => {
-          // console.debug({ id });
+          if (editRoute) {
+            router.push(_.replace(editRoute, '{id}', id.toString()));
+            return;
+          }
 
           setDatumId(id);
-          getDatum(getOneApiUri, getOneIdentifier, id.toString(), getOneDataModificationCallback);
+          getDatum(getOneApiUri!, getOneIdentifier!, id.toString(), getOneDataModificationCallback);
         },
       });
     }
@@ -392,8 +409,9 @@ function GenericViewGenerator({
   }, [actionDatum]);
 
   useEffect(() => {
+    if (editRoute) return;
     if (!_.isUndefined(datum) && !_.isNull(datum)) setEditFormModalOpen(true);
-  }, [datum]);
+  }, [datum, editRoute]);
 
   const leftToolbarTemplate = (
     <div>
@@ -408,9 +426,13 @@ function GenericViewGenerator({
         variant="default"
         className="mr-2"
         onClick={
-          !postApiUri
+          !postApiUri && !addNewRoute
             ? undefined
             : () => {
+                if (addNewRoute) {
+                  router.push(addNewRoute);
+                  return;
+                }
                 setAddFormModalOpen(true);
               }
         }
@@ -426,7 +448,7 @@ function GenericViewGenerator({
         () =>
           !data ? null : (
             <>
-              {!postApiUri ? null : (
+              {!postApiUri && !addNewRoute ? null : (
                 <div className="mb-4 flex justify-between items-center">
                   {leftToolbarTemplate}
                   {rightToolbarTemplate}
@@ -448,7 +470,7 @@ function GenericViewGenerator({
       )}
       {useMemo(
         () =>
-          !fields || _.size(fields) === 0 || !postApiUri ? null : (
+          !fields || _.size(fields) === 0 || !postApiUri || addNewRoute ? null : (
             <AddNewItemComponent
               isFormModalOpen={isAddFormModalOpen}
               setFormModalOpen={value => {
@@ -473,7 +495,12 @@ function GenericViewGenerator({
       )}
       {useMemo(
         () =>
-          (!fields && !editFields) || !putApiUri || !putIdentifier || !datum || !datumId ? null : (
+          editRoute ||
+          (!fields && !editFields) ||
+          !putApiUri ||
+          !putIdentifier ||
+          !datum ||
+          !datumId ? null : (
             <EditItemComponent
               isFormModalOpen={isEditFormModalOpen}
               setFormModalOpen={value => {
