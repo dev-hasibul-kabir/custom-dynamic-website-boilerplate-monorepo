@@ -14,6 +14,7 @@ import DropdownAsync from './global/dropdown-async';
 import FileUpload from './global/file-upload';
 import ImageDropdown from './global/image-dropdown';
 import InputCalender from './global/input-calendar';
+import InputTime from './global/input-time';
 import InputText from './global/InputText';
 import InputTextarea from './global/InputTextarea';
 import MultiSelect from './global/multi-select';
@@ -32,6 +33,7 @@ export {
   ImageDropdown as ImageSelectSyncField,
   InputCalender as InputDateField,
   InputText as InputTextField,
+  InputTime as InputTimeField,
   Modal,
   ModalConfirmation,
   MultiSelect as MultiSelectSyncField,

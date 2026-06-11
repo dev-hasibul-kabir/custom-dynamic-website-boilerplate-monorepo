@@ -2,22 +2,40 @@ import { Button } from '@/components/ui/button';
 import { FormikValues, useFormik } from 'formik';
 import _ from 'lodash';
 import { useEffect } from 'react';
-import {
-  ChipsField,
-  FileSelectField,
-  InputDateField,
-  InputTextField,
-  MultiSelectSyncField,
-  RichTextPlateField,
-  SelectAsyncField,
-  SelectSyncField,
-  TextareaField,
-} from '../index';
-import { ISelectOption } from './Dropdown';
-import { IMultiSelectOption } from './multi-select';
+import { normalizeTimeForInput } from '../../utils/date';
+import RichTextPlateField from '../fields/RichTextPlateField';
+import ChipsField from './Chips';
+import SelectSyncField, { ISelectOption } from './Dropdown';
+import SelectAsyncField from './dropdown-async';
+import FileSelectField from './file-upload';
+import InputDateField from './input-calendar';
+import InputTimeField from './input-time';
+import InputTextField from './InputText';
+import TextareaField from './InputTextarea';
+import MultiSelectSyncField, { IMultiSelectOption } from './multi-select';
+
+export type FieldType =
+  | 'hidden'
+  | 'text'
+  | 'email'
+  | 'number'
+  | 'password'
+  | 'tel'
+  | 'textarea'
+  | 'date'
+  | 'date-multiple'
+  | 'date-range'
+  | 'time'
+  | 'richtext'
+  | 'select-async'
+  | 'select-sync'
+  | 'multi-select-sync'
+  | 'chips'
+  | 'file-select'
+  | 'information';
 
 export interface IField {
-  type: string;
+  type: FieldType;
   name: string;
   title: string;
   placeholder: string;
@@ -33,6 +51,7 @@ export interface IField {
   enabledDates?: Date[]; // only for date picker
   notEnabledDateSelectionErrorMessage?: string;
   disabledDates?: Date[]; // only for date picker
+  step?: number; // only for time picker (HTML input step in seconds)
   acceptType?: 'image/*' | 'video/*' | 'application/*' | '*/*'; // only for file select
   maxFileSize?: number; // only for file select
   multiple?: boolean; // only for file select (default: true)
@@ -170,6 +189,11 @@ export default function GenericFormGenerator({
                 picked[field.name] = [String(value)];
               }
             }
+            if (field.type === 'time') {
+              const value = picked[field.name];
+              picked[field.name] =
+                value === undefined || value === null ? null : normalizeTimeForInput(String(value));
+            }
           });
           return picked;
         })(),
@@ -235,6 +259,7 @@ export default function GenericFormGenerator({
           //     field.type === 'date' ||
           //     field.type === 'date-multiple' ||
           //     field.type === 'date-range' ||
+          //     field.type === 'time' ||
           //     field.type === 'richtext' ||
           //     field.type === 'select-async' ||
           //     field.type === 'select-sync' ||
@@ -423,6 +448,23 @@ export default function GenericFormGenerator({
           disabledDates={field.disabledDates}
           isDisabled={field.isDisabled}
           errorMessage={errorMessage}
+        />
+      );
+
+    if (field.type === 'time')
+      return (
+        <InputTimeField
+          key={field.name}
+          name={field.name}
+          title={field.title}
+          placeholder={field.placeholder}
+          // @ts-ignore
+          value={formik.values[field.name] ?? ''}
+          setFieldValue={formik.setFieldValue}
+          setFieldTouched={formik.setFieldTouched}
+          isDisabled={field.isDisabled}
+          errorMessage={errorMessage}
+          step={field.step}
         />
       );
 

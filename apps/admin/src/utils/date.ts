@@ -8,6 +8,19 @@ export const DATE_FORMAT = {
   YEAR_MM_DD: 'YYYY-MM-DD',
   DATETIME_INPUT_HTML: 'YYYY-MM-DDTHH:mm:ss',
   DATETIME_SERVER: 'YYYY-MM-DDTHH:mm:ssZ',
+  TIME_HH_MM: 'HH:mm',
+  TIME_HH_MM_SS: 'HH:mm:ss',
+};
+
+export const normalizeTimeForInput = (value: string | null | undefined): string => {
+  if (!value) return '';
+  const parsed = moment(value, [DATE_FORMAT.TIME_HH_MM, DATE_FORMAT.TIME_HH_MM_SS], true);
+  return parsed.isValid() ? parsed.format(DATE_FORMAT.TIME_HH_MM) : '';
+};
+
+export const formatTimeForSubmit = (value: string | null | undefined): string | null => {
+  const normalized = normalizeTimeForInput(value);
+  return normalized || null;
 };
 
 export const getFormattedDatetime = (isoDatetime: string, format?: string) => {
