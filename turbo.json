@@ -23,19 +23,16 @@
     },
     "@repo/api#dev": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["@repo/storage#dev"]
+      "persistent": true
     },
     "@repo/admin#dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["@repo/api#dev", "@repo/storage#dev"],
       "env": ["NEXT_PUBLIC_API_BASE_URL", "NEXT_PUBLIC_STORAGE_BASE_URL"]
     },
     "@repo/web#dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["@repo/api#dev", "@repo/storage#dev"],
       "env": ["NEXT_PUBLIC_API_BASE_URL"]
     },
     "lint": {
