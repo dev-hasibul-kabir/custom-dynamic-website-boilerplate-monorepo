@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky || true",
+    "db:create": "pnpm --filter @repo/api db:create",
     "db:migrate:dev": "pnpm --filter @repo/api db:migrate:dev",
     "db:migrate:prod": "pnpm --filter @repo/api db:migrate:prod",
     "db:seed": "pnpm --filter @repo/api db:seed",

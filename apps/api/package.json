@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "db:migrate:reset:hard": "rm -Rf prisma/migrations/* && sleep 1 && prisma migrate reset --force --config ./prisma/prisma.config.ts",
-    "db:migrate:reset": "prisma migrate reset --force --config ./prisma/prisma.config.ts",
+    "db:create": "ts-node prisma/create-database.ts",
     "db:migrate:dev": "prisma migrate dev --config ./prisma/prisma.config.ts",
     "db:migrate:prod": "prisma migrate deploy --config ./prisma/prisma.config.ts && prisma generate --config ./prisma/prisma.config.ts",
     "db:generate": "prisma generate --config ./prisma/prisma.config.ts",
